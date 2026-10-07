@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8e6e8" />
+    <meta name="description" content="Sebuah kejutan ulang tahun kecil, dibuat dengan bunga dan banyak rasa sayang." />
+    <link rel="icon" href="data:," />
+    <title>Untukmu, di Hari Ulang Tahunmu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="content.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="petal-rain" id="petalRain" aria-hidden="true"></div>
+
+    <section class="lock-screen" id="lockScreen" aria-labelledby="lockTitle">
+      <div class="lock-orbit lock-orbit--one" aria-hidden="true"></div>
+      <div class="lock-orbit lock-orbit--two" aria-hidden="true"></div>
+      <div class="lock-sidecopy">
+        <span class="sidecopy-rule"></span>
+        <p>ada sesuatu yang kecil<br />untuk seseorang yang berarti.</p>
+        <span class="sidecopy-flower" aria-hidden="true">✿</span>
+      </div>
+
+      <div class="phone" id="phone">
+        <div class="phone-top" aria-hidden="true">
+          <span>11:11</span>
+          <span class="phone-island"></span>
+          <span class="phone-signal"><i></i><i></i><i></i><b></b></span>
+        </div>
+        <div class="phone-content">
+          <div class="lock-emblem" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none"><path d="M20 31c-5-4.3-12-8.9-12-15.1a6.1 6.1 0 0 1 11.8-2.2A6.1 6.1 0 0 1 31.6 16C31.6 22.1 25 26.7 20 31Z" stroke="currentColor" stroke-width="1.5"/><path d="M20 10V5m-8 6L9 8m23 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </div>
+          <p class="phone-kicker">sebuah pesan rahasia</p>
+          <h1 id="lockTitle">Hanya untuk<br /><em>kamu.</em></h1>
+          <p class="phone-description">Masukkan tanggal yang selalu ingin dirayakan.</p>
+
+          <form id="unlockForm" novalidate>
+            <label class="sr-only" for="pinInput">Tanggal istimewa, delapan angka dalam format DDMMYYYY</label>
+            <div class="pin-field" id="pinField">
+              <div class="pin-dots" id="pinDots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <input id="pinInput" class="pin-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" aria-describedby="pinHint pinMessage" />
+            </div>
+            <p class="pin-hint" id="pinHint">Petunjuk: DDMMYYYY</p>
+            <p class="pin-message" id="pinMessage" role="status" aria-live="polite"></p>
+            <div class="keypad" aria-label="Papan angka">
+              <button type="button" class="key" data-digit="1">1</button>
+              <button type="button" class="key" data-digit="2">2</button>
+              <button type="button" class="key" data-digit="3">3</button>
+              <button type="button" class="key" data-digit="4">4</button>
+              <button type="button" class="key" data-digit="5">5</button>
+              <button type="button" class="key" data-digit="6">6</button>
+              <button type="button" class="key" data-digit="7">7</button>
+              <button type="button" class="key" data-digit="8">8</button>
+              <button type="button" class="key" data-digit="9">9</button>
+              <span class="key-spacer" aria-hidden="true"></span>
+              <button type="button" class="key" data-digit="0">0</button>
+              <button type="button" class="key key--delete" id="deleteKey" aria-label="Hapus angka terakhir">
+                <svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M10.7 5H22a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H10.7a3 3 0 0 1-2.1-.9L2 15.4a2 2 0 0 1 0-2.8l6.6-6.7A3 3 0 0 1 10.7 5Z" stroke="currentColor" stroke-width="1.7"/><path d="m13 11 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <button class="unlock-button" type="submit">Buka kejutan <span aria-hidden="true">↗</span></button>
+          </form>
+        </div>
+        <div class="phone-home" aria-hidden="true"></div>
+      </div>
+      <p class="lock-footnote">dibuat dengan sepenuh hati <span aria-hidden="true">♡</span></p>
+    </section>
+
+    <div id="birthdayPage" hidden>
+      <header class="site-header">
+        <a class="wordmark" href="#atas" aria-label="Kembali ke awal halaman">untukmu<span class="wordmark-period">.</span></a>
+        <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" aria-label="Putar musik romantis">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 18V5l10-2v13M10 18c0 1.7-1.8 3-4 3s-4-1.3-4-3 1.8-3 4-3 4 1.3 4 3Zm10-2c0 1.7-1.8 3-4 3s-4-1.3-4-3 1.8-3 4-3 4 1.3 4 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="musicLabel">Putar musik</span>
+          <span class="music-waves" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
+        <audio id="romanceAudio" src="assets/romance.wav" preload="auto" loop></audio>
+        <span class="sr-only" id="musicStatus" role="status" aria-live="polite"></span>
+      </header>
+
+      <main>
+        <section class="hero" id="atas" aria-labelledby="heroTitle">
+          <div class="hero-flower hero-flower--left" aria-hidden="true">✽</div>
+          <div class="hero-flower hero-flower--right" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none"><g fill="#eac3cb"><ellipse cx="50" cy="28" rx="11" ry="21"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(72 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(144 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(216 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(288 50 50)"/></g><circle cx="50" cy="50" r="10" fill="#dcabb5"/></svg></div>
+          <div class="hero-inner">
+            <div class="hero-copy">
+              <p class="chapter-label"><span class="tiny-rule"></span> 14 Oktober <span class="tiny-rule"></span></p>
+              <h2 id="heroTitle">Hari ini,<br />semesta <em>merayakanmu.</em></h2>
+              <p class="hero-description">Selamat ulang tahun, sayang. Aku menyiapkan sesuatu yang kecil untukmu. Coba buka kadonya, ya.</p>
+              <div class="hero-note"><span class="note-line" aria-hidden="true"></span> ada bunga di dalamnya</div>
+            </div>
+
+            <div class="hero-surprise">
+              <div class="gift-halo" aria-hidden="true"></div>
+              <button class="gift-button" id="giftButton" type="button" aria-label="Buka kotak kado" aria-expanded="false">
+                <span class="gift-scene" aria-hidden="true">
+                  <span class="gift-ground"></span>
+                  <svg class="bouquet" viewBox="0 0 390 390" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <g id="pinkFlower">
+                        <ellipse cx="0" cy="-22" rx="14" ry="24" fill="#ed9dae"/>
+                        <ellipse cx="0" cy="-22" rx="14" ry="24" fill="#f3b2c0" transform="rotate(72)"/>
+                        <ellipse cx="0" cy="-22" rx="14" ry="24" fill="#e993a6" transform="rotate(144)"/>
+                        <ellipse cx="0" cy="-22" rx="14" ry="24" fill="#f4b9c5" transform="rotate(216)"/>
+                        <ellipse cx="0" cy="-22" rx="14" ry="24" fill="#e99aa9" transform="rotate(288)"/>
+                        <circle r="13" fill="#f9e2a3"/><circle r="4" fill="#e3b66d"/>
+                      </g>
+                      <g id="creamFlower">
+                        <ellipse cx="0" cy="-19" rx="12" ry="20" fill="#fff3e7"/>
+                        <ellipse cx="0" cy="-19" rx="12" ry="20" fill="#fce9e2" transform="rotate(72)"/>
+                        <ellipse cx="0" cy="-19" rx="12" ry="20" fill="#fff5e9" transform="rotate(144)"/>
+                        <ellipse cx="0" cy="-19" rx="12" ry="20" fill="#fae5df" transform="rotate(216)"/>
+                        <ellipse cx="0" cy="-19" rx="12" ry="20" fill="#fff5ed" transform="rotate(288)"/>
+                        <circle r="11" fill="#e4ab7b"/><circle r="4" fill="#a66e56"/>
+                      </g>
+                    </defs>
+                    <path d="M195 340 103 158 169 182 195 340Z" fill="#f9e3d9"/>
+                    <path d="M195 340 287 156 217 182 195 340Z" fill="#f3cfc8"/>
+                    <path d="M195 340 163 186 229 182 195 340Z" fill="#fff0e7"/>
+                    <path d="M195 332C192 259 165 164 129 104M195 332c20-98 55-174 94-218M195 332c-3-98 1-190 12-252M195 332c-43-101-74-142-111-172M195 332c42-106 62-137 100-161" stroke="#769371" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M166 242c-53 6-56-27-58-40 34 0 53 15 58 40Zm43-20c45-4 58-34 58-46-38 3-54 23-58 46Zm-33-43c-39-7-45-32-44-46 29 5 44 21 44 46Zm54-13c26-7 34-27 34-42-29 7-40 22-34 42Zm-50 115c-28 2-41-20-44-34 31 1 42 14 44 34Z" fill="#91aa8a"/>
+                    <path d="M111 143c-26-23-35-46-29-66m37 75c-28-12-43-31-45-46m218 52c24-22 28-44 24-63m-34 74c29-10 45-25 51-44" stroke="#829f7f" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="81" cy="77" r="5" fill="#edb9b9"/><circle cx="74" cy="106" r="5" fill="#e8a3ae"/><circle cx="316" cy="95" r="5" fill="#edb9b9"/><circle cx="333" cy="125" r="5" fill="#e8a3ae"/>
+                    <g transform="translate(130 105) rotate(-18)"><use href="#pinkFlower"/></g>
+                    <g transform="translate(205 81) scale(1.16)"><use href="#creamFlower"/></g>
+                    <g transform="translate(288 114) rotate(23)"><use href="#pinkFlower"/></g>
+                    <g transform="translate(87 158) scale(.73)"><use href="#creamFlower"/></g>
+                    <g transform="translate(278 169) scale(.75)"><use href="#creamFlower"/></g>
+                    <g transform="translate(176 162) scale(.8)"><use href="#pinkFlower"/></g>
+                    <path d="M139 236 195 340 251 236" stroke="#e4bbb4" stroke-width="2" opacity=".7"/>
+                    <path d="M166 265c12-12 23-7 29 7 8-14 23-18 31-6-7 11-17 15-31 6-9 10-19 6-29-7Z" fill="#d98294"/>
+                    <path d="M195 272c-8 17-13 28-7 36m7-36c7 17 14 27 8 37" stroke="#cb7487" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="195" cy="272" r="6" fill="#b95b70"/>
+                  </svg>
+                  <span class="gift-lid"><span class="lid-band"></span><span class="bow bow--left"></span><span class="bow bow--right"></span><span class="bow-knot"></span></span>
+                  <span class="gift-box"><span class="box-band"></span><span class="box-shine"></span></span>
+                  <span class="burst-ring"></span>
+                  <span class="ribbon-burst">
+                    <i style="--x:-180px;--y:-145px;--fall-x:-225px;--fall-y:265px;--turn:-420deg;--end-turn:-760deg;--delay:0ms"></i>
+                    <i style="--x:-125px;--y:-190px;--fall-x:-175px;--fall-y:290px;--turn:280deg;--end-turn:610deg;--delay:35ms"></i>
+                    <i style="--x:-65px;--y:-210px;--fall-x:-110px;--fall-y:240px;--turn:-310deg;--end-turn:-690deg;--delay:65ms"></i>
+                    <i style="--x:15px;--y:-210px;--fall-x:5px;--fall-y:275px;--turn:355deg;--end-turn:720deg;--delay:10ms"></i>
+                    <i style="--x:88px;--y:-198px;--fall-x:125px;--fall-y:255px;--turn:-290deg;--end-turn:-650deg;--delay:40ms"></i>
+                    <i style="--x:165px;--y:-150px;--fall-x:215px;--fall-y:305px;--turn:390deg;--end-turn:800deg;--delay:80ms"></i>
+                    <i style="--x:-190px;--y:-55px;--fall-x:-235px;--fall-y:320px;--turn:300deg;--end-turn:690deg;--delay:100ms"></i>
+                    <i style="--x:-105px;--y:-105px;--fall-x:-150px;--fall-y:325px;--turn:-380deg;--end-turn:-750deg;--delay:20ms"></i>
+                    <i style="--x:115px;--y:-105px;--fall-x:175px;--fall-y:320px;--turn:310deg;--end-turn:710deg;--delay:115ms"></i>
+                    <i style="--x:195px;--y:-70px;--fall-x:245px;--fall-y:290px;--turn:-410deg;--end-turn:-820deg;--delay:55ms"></i>
+                    <i style="--x:-45px;--y:-155px;--fall-x:-75px;--fall-y:350px;--turn:330deg;--end-turn:790deg;--delay:90ms"></i>
+                    <i style="--x:53px;--y:-140px;--fall-x:95px;--fall-y:350px;--turn:-360deg;--end-turn:-760deg;--delay:120ms"></i>
+                  </span>
+                </span>
+                <span class="gift-action" id="giftAction">sentuh untuk membuka kado <span aria-hidden="true">↗</span></span>
+              </button>
+              <div class="reveal-note" id="revealNote" aria-live="polite">
+                <span class="reveal-ornament" aria-hidden="true">❧</span>
+                <p>Setangkai bunga mungkin akan layu, tapi doaku untukmu tidak.</p>
+                <a href="#cerita" id="storyLink" hidden>Lanjut ke cerita kita <span aria-hidden="true">↓</span></a>
+              </div>
+            </div>
+          </div>
+          <div class="hero-bottom" aria-hidden="true"><span>sebuah hadiah kecil</span><span>dibuat dengan cinta</span></div>
+        </section>
+
+        <section class="story-section" id="cerita" aria-labelledby="storyTitle" hidden>
+          <div class="story-heading">
+            <p class="chapter-label">halaman berikutnya</p>
+            <h2 id="storyTitle">Cerita kita,<br /><em>pelan-pelan.</em></h2>
+            <p>Beberapa kenangan layak disimpan lebih lama. Ruang-ruang di bawah ini menunggu foto dan kisah asli dari kalian.</p>
+          </div>
+          <div class="memory-list" id="memoryList"></div>
+        </section>
+
+        <section class="letter-section" id="surat" aria-labelledby="letterTitle" hidden>
+          <div class="letter-flower" aria-hidden="true">✽</div>
+          <div class="letter-paper">
+            <p class="letter-kicker">sepucuk surat untukmu</p>
+            <h2 id="letterTitle">Untuk kamu yang<br /><em>sedang berulang tahun,</em></h2>
+            <div class="letter-body">
+              <p>Semoga di tahun yang baru ini, kamu lebih sering bertemu hal-hal yang membuat hatimu tenang. Semoga ada banyak tawa yang datang tanpa perlu dicari.</p>
+              <p>Kalau hari terasa berat, istirahatlah sebentar. Kamu tidak harus selalu kuat. Aku harap kamu tahu, ada seseorang yang selalu ingin melihatmu bahagia.</p>
+              <p>Selamat ulang tahun, sayang. Terima kasih sudah menjadi dirimu sendiri.</p>
+            </div>
+            <p class="letter-signature">dengan sayang, <span>♡</span></p>
+          </div>
+          <div class="closing-line">bunga, doa, dan sedikit cerita untukmu.</div>
+        </section>
+      </main>
+      <footer class="site-footer"><span>14 Oktober 2006</span><span>dibuat untuk satu orang yang istimewa</span><a href="#atas">kembali ke atas ↑</a></footer>
+    </div>
+  </body>
+</html>
