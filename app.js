@@ -7,6 +7,7 @@ const pinMessage = document.getElementById('pinMessage');
 const phone = document.getElementById('phone');
 const giftButton = document.getElementById('giftButton');
 const giftAction = document.getElementById('giftAction');
+const memoryPhotoRain = document.getElementById('memoryPhotoRain');
 const revealNote = document.getElementById('revealNote');
 const storyLink = document.getElementById('storyLink');
 const storySection = document.getElementById('cerita');
@@ -152,6 +153,64 @@ function renderMemories() {
 
 renderMemories();
 
+function renderMemoryPhotoRain() {
+  const memories = window.BIRTHDAY_CONTENT?.memories || [];
+  const photoCount = Math.min(12, memories.length * 3);
+
+  for (let index = 0; index < photoCount; index += 1) {
+    const memory = memories[index % memories.length];
+    const photo = document.createElement('span');
+    photo.className = 'memory-rain-photo';
+    const xPosition = ((index * 37 + 11) % 89) / 89;
+    photo.dataset.xPosition = String(xPosition);
+    photo.dataset.index = String(index);
+    photo.style.setProperty('--rain-delay', `${index * 130}ms`);
+    photo.style.setProperty('--rain-tilt', `${(index * 13) % 25 - 12}deg`);
+    photo.style.setProperty('--rain-spin', `${index % 2 ? 220 : -220}deg`);
+    const image = document.createElement('img');
+    image.alt = '';
+    image.hidden = true;
+    const placeholder = document.createElement('span');
+    placeholder.className = 'memory-rain-photo__placeholder';
+    placeholder.textContent = memory.photo ? 'Memuat foto...' : 'Tambahkan foto';
+    const caption = document.createElement('span');
+    caption.className = 'memory-rain-photo__caption';
+    caption.textContent = memory.caption || memory.title || `Kenangan ${index + 1}`;
+
+    if (memory.photo) {
+      image.addEventListener('load', () => {
+        image.hidden = false;
+        placeholder.hidden = true;
+      });
+      image.addEventListener('error', () => {
+        placeholder.textContent = 'Periksa content.js';
+      });
+      image.src = memory.photo;
+    }
+
+    photo.append(image, placeholder, caption);
+    memoryPhotoRain.appendChild(photo);
+  }
+
+  positionMemoryPhotoRain();
+}
+
+function positionMemoryPhotoRain() {
+  const viewportWidth = document.documentElement.clientWidth;
+  const photoWidth = Math.min(88, Math.max(58, viewportWidth * 0.08));
+  const inset = Math.min(24, viewportWidth * 0.06);
+  memoryPhotoRain.querySelectorAll('.memory-rain-photo').forEach((photo) => {
+    const availableWidth = Math.max(0, viewportWidth - photoWidth - inset * 2);
+    const index = Number(photo.dataset.index);
+    const drift = Math.round((((index * 53) % 101) - 50) * Math.min(0.48, viewportWidth / 800));
+    photo.style.left = `${Math.round(inset + Number(photo.dataset.xPosition) * availableWidth)}px`;
+    photo.style.setProperty('--rain-drift', `${drift}px`);
+  });
+}
+
+renderMemoryPhotoRain();
+window.addEventListener('resize', positionMemoryPhotoRain);
+
 const romanceAudio = document.getElementById('romanceAudio');
 const musicStatus = document.getElementById('musicStatus');
 let musicWasChosen = false;
@@ -206,6 +265,7 @@ giftButton.addEventListener('click', () => {
   giftButton.disabled = true;
   giftButton.setAttribute('aria-label', 'Kado sedang dibuka');
   giftButton.classList.remove('is-bursting', 'is-blooming');
+  memoryPhotoRain.classList.remove('is-falling');
   giftAction.textContent = 'siap-siap, pitanya akan beterbangan...';
 
   if (!musicWasChosen && romanceAudio.paused) startMusic();
@@ -223,15 +283,21 @@ giftButton.addEventListener('click', () => {
     giftOpening = false;
     giftButton.disabled = false;
     giftButton.setAttribute('aria-expanded', 'true');
-    giftButton.setAttribute('aria-label', 'Ulangi kejutan pita dan bunga');
+    giftButton.setAttribute('aria-label', 'Ulangi kejutan pita, bunga, dan foto');
     giftAction.innerHTML = 'sentuh untuk ulangi kejutan <span aria-hidden="true">↗</span>';
   }
 
   function bloom() {
     giftButton.classList.add('is-blooming');
+    memoryPhotoRain.classList.add('is-falling');
     giftAction.textContent = 'bunganya sedang muncul...';
     if (reducedMotion) finishReveal();
-    else window.setTimeout(finishReveal, 1100);
+    else {
+      const photoRainDuration = memoryPhotoRain.childElementCount
+        ? 3000 + (memoryPhotoRain.childElementCount - 1) * 130
+        : 0;
+      window.setTimeout(finishReveal, Math.max(1100, photoRainDuration));
+    }
   }
 
   function burst() {
