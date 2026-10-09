@@ -1,6 +1,6 @@
 # Web ulang tahun
 
-Web statis tanpa instalasi paket. Alurnya: masukkan tanggal di layar ponsel, buka kado, lihat pita menyembur sebelum bunga muncul dan foto-foto kenangan turun seperti hujan tanpa henti sampai halaman ditutup, lalu scroll untuk membaca cerita dan surat. Hujan foto memakai gambar pada entri kenangan di `content.js`. Musik instrumental romantis ada di `assets/romance.wav`, sehingga tidak perlu koneksi internet. Musik mulai saat kado diketuk dan bisa diputar atau dijeda lewat tombol di atas.
+Web statis tanpa instalasi paket. Alurnya: masukkan tanggal di layar ponsel, buka kado, lihat pita menyembur sebelum bunga muncul dan lima foto kenangan turun bersamaan dengan posisi, kemiringan, serta waktu jatuh yang berbeda-beda, jadi terlihat lebih berantakan. Setelah semuanya selesai turun, ada jeda 15 detik sebelum lima foto berikutnya muncul. Lalu scroll untuk membaca tiga cerita bergambar, surat, dan album foto. Hujan foto dan album memakai daftar `albumPhotos` di `content.js`, jadi foto yang ditambahkan otomatis bergiliran turun sekaligus masuk ke album. Album berbentuk buku hardcover pastel: buka sampulnya, lalu balik halaman demi halaman, setiap halaman berisi 9 foto dalam bingkai. Album memuat semua 140 foto dari folder `full foto/`. Halaman dibalik dengan mengklik sisi buku, menekan tombol panah kiri atau kanan saat buku difokuskan, atau memakai tombol di bawah buku. Musik Love Songs diputar dari [music/love-songs.mp3](./music/love-songs.mp3); musik mulai saat kado dibuka dan tombol di bagian atas dapat dipakai untuk putar/jeda.
 
 ## Menjalankan
 
@@ -30,7 +30,11 @@ Buka `http://localhost:8000` di browser. Kode masuk: **14102006** (14 Oktober 20
 
 Saat `story` atau `photo` masih kosong, web menampilkan placeholder yang jelas. Bingkai placeholder ikut turun seperti foto sampai foto asli diisi. Jika jalur foto salah, muncul pesan kesalahan di bingkai foto. Teks surat ulang tahun ada di `index.html` bagian `letter-section` bila ingin diganti dengan pesan pribadi.
 
-Browser biasanya mengizinkan suara hanya setelah pengguna mengetuk tombol. Karena itu musik mulai saat kado diketuk, bukan saat halaman dimuat. Jika tidak terdengar, periksa volume perangkat atau ketuk **Putar musik**. Saat pengguna mengaktifkan **reduced motion**, hujan sakura dan animasi ledakan dimatikan, tetapi kado tetap terbuka.
+Foto album ada di daftar `albumPhotos` pada `content.js` yang sama. Setiap 9 foto menjadi satu halaman buku dan sisanya mengisi halaman terakhir. Buku dimulai dari sampul bertuliskan "Album Kita", diakhiri halaman penutup, dan menampilkan pesan bila daftarnya kosong. Bila ada foto yang tidak bisa dibuka, bingkainya menampilkan "Foto belum bisa dibuka" tanpa mengganggu halaman lain.
+
+Foto yang dipakai web disimpan di `assets/foto/` dalam bentuk JPEG progresif lebar maksimal 900 piksel, supaya hujan foto dan balik halaman tetap lancar. Foto asli tetap tidak berubah di folder `full foto/`. Bila kamu menambahkan foto baru, masukkan jalur aslinya ke daftar `albumPhotos`, lalu buat salinan ukuran webnya di `assets/foto/` dengan cara yang sama.
+
+File sumber yang kamu tambahkan di `music/` berupa audio AAC dalam kontainer MP4/DASH, bukan berkas MP3 biasa. Situs memakai versi browser-compatible [music/love-songs.mp3](./music/love-songs.mp3); file sumber tetap tidak diubah. Browser biasanya mengizinkan suara hanya setelah interaksi pengguna, jadi musik mulai saat kado diketuk. Jika tidak terdengar, periksa volume perangkat atau ketuk **Putar lagu**. Saat pengguna mengaktifkan **reduced motion**, hujan sakura dan animasi ledakan dimatikan, balik halaman album menjadi instan, tetapi kado tetap terbuka.
 
 ## Hosting dengan GitHub Pages
 

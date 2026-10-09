@@ -15,6 +15,51 @@ const letterSection = document.getElementById('surat');
 const albumSection = document.getElementById('album');
 const musicToggle = document.getElementById('musicToggle');
 const musicLabel = document.getElementById('musicLabel');
+const romanceAudio = document.getElementById('romanceAudio');
+const musicStatus = document.getElementById('musicStatus');
+let musicWasChosen = false;
+
+function updateMusicButton() {
+  const playing = !romanceAudio.paused && !romanceAudio.ended;
+  musicToggle.setAttribute('aria-pressed', String(playing));
+  musicToggle.setAttribute('aria-label', playing ? 'Jeda Love Songs' : 'Putar Love Songs');
+  musicLabel.textContent = playing ? 'Jeda lagu' : 'Putar lagu';
+}
+
+function showMusicFailure() {
+  updateMusicButton();
+  if (romanceAudio.error) {
+    musicLabel.textContent = 'Lagu tidak tersedia';
+    musicStatus.textContent = 'Berkas musik tidak bisa dibuka. Periksa file MP3 di folder music/.';
+  } else {
+    musicLabel.textContent = 'Ketuk untuk musik';
+    musicStatus.textContent = 'Browser menahan musik. Ketuk tombol musik untuk mencoba lagi.';
+  }
+}
+
+function startMusic() {
+  musicStatus.textContent = '';
+  romanceAudio.volume = .85;
+  try {
+    const playback = romanceAudio.play();
+    updateMusicButton();
+    if (playback) playback.catch(showMusicFailure);
+  } catch {
+    showMusicFailure();
+  }
+}
+
+romanceAudio.addEventListener('playing', updateMusicButton);
+romanceAudio.addEventListener('pause', updateMusicButton);
+romanceAudio.addEventListener('error', showMusicFailure);
+musicToggle.addEventListener('click', () => {
+  musicWasChosen = true;
+  if (romanceAudio.paused) startMusic();
+  else {
+    romanceAudio.pause();
+    updateMusicButton();
+  }
+});
 
 function updateDots() {
   const count = pinInput.value.replace(/\D/g, '').length;
@@ -156,44 +201,137 @@ renderMemories();
 
 function renderMemoryPhotoRain() {
   const albumPhotos = window.BIRTHDAY_CONTENT?.albumPhotos || [];
-  const photoCount = 40;
-
-  for (let index = 0; index < photoCount; index += 1) {
+  const photoCount = 5;
+  const photoCards = Array.from({ length: photoCount }, () => {
     const photo = document.createElement('span');
     photo.className = 'memory-rain-photo';
-    const xPosition = ((index * 37 + 11) % 89) / 89;
-    photo.dataset.xPosition = String(xPosition);
-    photo.dataset.index = String(index);
-    photo.style.setProperty('--rain-delay', `${index * 130}ms`);
-    photo.style.setProperty('--rain-tilt', `${(index * 13) % 25 - 12}deg`);
-    photo.style.setProperty('--rain-spin', `${index % 2 ? 220 : -220}deg`);
     const image = document.createElement('img');
     image.alt = '';
+    image.decoding = 'async';
     image.hidden = true;
     const placeholder = document.createElement('span');
     placeholder.className = 'memory-rain-photo__placeholder';
     placeholder.textContent = albumPhotos.length ? 'Memuat foto...' : 'Tambahkan foto';
     const caption = document.createElement('span');
     caption.className = 'memory-rain-photo__caption';
-    caption.textContent = `Kenangan ${index + 1}`;
-
-    if (albumPhotos.length) {
-      const photoPath = albumPhotos[index % albumPhotos.length];
-      image.addEventListener('load', () => {
-        image.hidden = false;
-        placeholder.hidden = true;
-      });
-      image.addEventListener('error', () => {
-        placeholder.textContent = 'Periksa content.js';
-      });
-      image.src = photoPath;
-    }
-
     photo.append(image, placeholder, caption);
     memoryPhotoRain.appendChild(photo);
+    return { photo, image, placeholder, caption };
+  });
+
+  let currentPhotoIndex = 0;
+  let cooldownTimer = null;
+  let rainIsActive = false;
+  let onFirstFallComplete = null;
+  let currentBatchToken = 0;
+  let finishedPhotoCount = 0;
+
+  function loadPhoto(card, index, xPosition, onReady) {
+    const { photo, image, placeholder, caption } = card;
+    photo.dataset.index = String(index);
+    photo.dataset.xPosition = String(xPosition);
+    photo.style.top = `${Math.round(Math.random() * 300 - 100)}px`;
+    photo.style.setProperty('--rain-tilt', `${Math.round(Math.random() * 56 - 28)}deg`);
+    photo.style.setProperty('--rain-spin', `${Math.round(Math.random() * 360 - 180)}deg`);
+    photo.style.setProperty('--rain-delay', `${Math.random() * 1400}ms`);
+    photo.style.setProperty('--rain-duration', `${5.5 + Math.random() * 3}s`);
+    positionMemoryPhotoRain();
+    caption.textContent = `Kenangan ${index + 1}`;
+    image.hidden = true;
+    placeholder.hidden = false;
+    placeholder.textContent = albumPhotos.length ? 'Memuat foto...' : 'Tambahkan foto';
+
+    if (!albumPhotos.length) {
+      onReady();
+      return;
+    }
+
+    let settled = false;
+    const settle = (loaded) => {
+      if (settled) return;
+      settled = true;
+      if (loaded) {
+        image.hidden = false;
+        placeholder.hidden = true;
+      } else {
+        placeholder.textContent = 'Periksa content.js';
+      }
+      onReady();
+    };
+    image.onload = () => settle(true);
+    image.onerror = () => settle(false);
+    image.src = albumPhotos[index];
+    if (image.complete) {
+      window.setTimeout(() => settle(image.naturalWidth > 0), 0);
+    }
+  }
+
+  function startPhotoFall(batchToken) {
+    if (!rainIsActive || batchToken !== currentBatchToken) return;
+    memoryPhotoRain.classList.remove('is-falling');
+    photoCards.forEach(({ photo }) => void photo.offsetWidth);
+    finishedPhotoCount = 0;
+    memoryPhotoRain.classList.add('is-falling');
+  }
+
+  function startPhotoBatch() {
+    if (!rainIsActive) return;
+    const batchToken = ++currentBatchToken;
+    const photoSlots = photoCards.map(() => 0.04 + Math.random() * 0.92);
+
+    let remainingPhotos = photoCards.length;
+    photoCards.forEach((card, offset) => {
+      const photoIndex = albumPhotos.length
+        ? (currentPhotoIndex + offset) % albumPhotos.length
+        : currentPhotoIndex + offset;
+      loadPhoto(card, photoIndex, photoSlots[offset], () => {
+        if (!rainIsActive || batchToken !== currentBatchToken) return;
+        remainingPhotos -= 1;
+        if (remainingPhotos === 0) startPhotoFall(batchToken);
+      });
+    });
+  }
+
+  photoCards.forEach(({ photo }) => photo.addEventListener('animationend', (event) => {
+    if (event.animationName !== 'memory-photo-fall' || !rainIsActive) return;
+    finishedPhotoCount += 1;
+    if (finishedPhotoCount < photoCards.length) return;
+
+    memoryPhotoRain.classList.remove('is-falling');
+    if (onFirstFallComplete) {
+      const callback = onFirstFallComplete;
+      onFirstFallComplete = null;
+      callback();
+    }
+    if (!rainIsActive) return;
+
+    cooldownTimer = window.setTimeout(() => {
+      if (!rainIsActive) return;
+      currentPhotoIndex = (currentPhotoIndex + photoCards.length)
+        % Math.max(albumPhotos.length, photoCards.length);
+      startPhotoBatch();
+    }, 15000);
+  }));
+
+  function stopPhotoRain() {
+    rainIsActive = false;
+    currentBatchToken += 1;
+    window.clearTimeout(cooldownTimer);
+    cooldownTimer = null;
+    onFirstFallComplete = null;
+    memoryPhotoRain.classList.remove('is-falling');
+  }
+
+  function startPhotoRain(onInitialFallComplete) {
+    stopPhotoRain();
+    rainIsActive = true;
+    currentPhotoIndex = 0;
+    onFirstFallComplete = onInitialFallComplete;
+    startPhotoBatch();
   }
 
   positionMemoryPhotoRain();
+  return { startPhotoRain, stopPhotoRain };
 }
 
 function positionMemoryPhotoRain() {
@@ -209,54 +347,8 @@ function positionMemoryPhotoRain() {
   });
 }
 
-renderMemoryPhotoRain();
+const photoRain = renderMemoryPhotoRain();
 window.addEventListener('resize', positionMemoryPhotoRain);
-
-const romanceAudio = document.getElementById('romanceAudio');
-const musicStatus = document.getElementById('musicStatus');
-let musicWasChosen = false;
-
-function updateMusicButton() {
-  const playing = !romanceAudio.paused && !romanceAudio.ended;
-  musicToggle.setAttribute('aria-pressed', String(playing));
-  musicToggle.setAttribute('aria-label', playing ? 'Jeda musik romantis' : 'Putar musik romantis');
-  musicLabel.textContent = playing ? 'Jeda musik' : 'Putar musik';
-}
-
-function showMusicFailure() {
-  updateMusicButton();
-  if (romanceAudio.error) {
-    musicLabel.textContent = 'Musik tidak tersedia';
-    musicStatus.textContent = 'Berkas musik tidak bisa dibuka. Periksa assets/romance.wav.';
-  } else {
-    musicLabel.textContent = 'Ketuk untuk musik';
-    musicStatus.textContent = 'Browser menahan musik. Ketuk tombol musik untuk mencoba lagi.';
-  }
-}
-
-function startMusic() {
-  musicStatus.textContent = '';
-  romanceAudio.volume = .85;
-  try {
-    const playback = romanceAudio.play();
-    updateMusicButton();
-    if (playback) playback.catch(showMusicFailure);
-  } catch {
-    showMusicFailure();
-  }
-}
-
-romanceAudio.addEventListener('playing', updateMusicButton);
-romanceAudio.addEventListener('pause', updateMusicButton);
-romanceAudio.addEventListener('error', showMusicFailure);
-musicToggle.addEventListener('click', () => {
-  musicWasChosen = true;
-  if (romanceAudio.paused) startMusic();
-  else {
-    romanceAudio.pause();
-    updateMusicButton();
-  }
-});
 
 let giftOpened = false;
 let giftOpening = false;
@@ -266,7 +358,7 @@ giftButton.addEventListener('click', () => {
   giftButton.disabled = true;
   giftButton.setAttribute('aria-label', 'Kado sedang dibuka');
   giftButton.classList.remove('is-bursting', 'is-blooming');
-  memoryPhotoRain.classList.remove('is-falling');
+  photoRain.stopPhotoRain();
   giftAction.textContent = 'siap-siap, pitanya akan beterbangan...';
 
   if (!musicWasChosen && romanceAudio.paused) startMusic();
@@ -291,15 +383,9 @@ giftButton.addEventListener('click', () => {
 
   function bloom() {
     giftButton.classList.add('is-blooming');
-    memoryPhotoRain.classList.add('is-falling');
     giftAction.textContent = 'bunganya sedang muncul...';
     if (reducedMotion) finishReveal();
-    else {
-      const photoRainDuration = memoryPhotoRain.childElementCount
-        ? 3000 + (memoryPhotoRain.childElementCount - 1) * 130
-        : 0;
-      window.setTimeout(finishReveal, Math.max(1100, photoRainDuration));
-    }
+    else photoRain.startPhotoRain(finishReveal);
   }
 
   function burst() {
@@ -315,79 +401,256 @@ giftButton.addEventListener('click', () => {
 
 function renderAlbum() {
   const albumPhotos = window.BIRTHDAY_CONTENT?.albumPhotos || [];
-  if (!albumPhotos.length) return;
-
-  const photosPerPage = 9;
-  const totalPages = Math.ceil(albumPhotos.length / photosPerPage);
-  const albumPages = document.getElementById('albumPages');
+  const albumContainer = document.getElementById('albumContainer');
+  const albumBook = document.getElementById('albumBook');
+  const bookPage = document.getElementById('bookPage');
+  const bookLeaf = document.getElementById('bookLeaf');
+  const leafFront = document.getElementById('leafFront');
+  const leafBack = document.getElementById('leafBack');
+  const bookTurnShadow = document.getElementById('bookTurnShadow');
   const albumCounter = document.getElementById('albumCounter');
   const albumPrev = document.getElementById('albumPrev');
   const albumNext = document.getElementById('albumNext');
 
-  let currentPage = 0;
-
-  for (let pageNum = 0; pageNum < totalPages; pageNum += 1) {
-    const page = document.createElement('div');
-    page.className = `album-page ${pageNum === 0 ? 'active' : 'next'}`;
-    page.setAttribute('data-page', String(pageNum));
-
-    for (let i = 0; i < photosPerPage; i += 1) {
-      const photoIndex = pageNum * photosPerPage + i;
-      const photoPath = albumPhotos[photoIndex];
-      if (!photoPath) break;
-
-      const frame = document.createElement('div');
-      frame.className = 'album-photo-frame';
-      const img = document.createElement('img');
-      img.alt = `Foto ${photoIndex + 1}`;
-      img.hidden = true;
-      const placeholder = document.createElement('div');
-      placeholder.className = 'album-photo-frame__placeholder';
-      placeholder.textContent = 'Memuat...';
-
-      img.addEventListener('load', () => {
-        img.hidden = false;
-        placeholder.hidden = true;
-      });
-      img.addEventListener('error', () => {
-        placeholder.textContent = 'Gagal muat';
-      });
-      img.src = photoPath;
-
-      frame.append(placeholder, img);
-      page.appendChild(frame);
-    }
-    albumPages.appendChild(page);
+  if (!albumPhotos.length) {
+    albumBook.hidden = true;
+    const empty = document.createElement('p');
+    empty.className = 'album-empty';
+    empty.textContent = 'Belum ada foto di album. Tambahkan jalur foto kalian di content.js.';
+    albumContainer.prepend(empty);
+    albumPrev.hidden = true;
+    albumNext.hidden = true;
+    albumCounter.textContent = '';
+    const hint = albumContainer.querySelector('.album-hint');
+    if (hint) hint.hidden = true;
+    return;
   }
 
-  function updateAlbumView() {
-    document.querySelectorAll('.album-page').forEach((p) => {
-      p.classList.remove('active', 'prev', 'next');
-      const pageNum = Number(p.dataset.page);
-      if (pageNum === currentPage) p.classList.add('active');
-      else if (pageNum < currentPage) p.classList.add('prev');
-      else p.classList.add('next');
+  const photosPerPage = 9;
+  const totalPhotoPages = Math.ceil(albumPhotos.length / photosPerPage);
+  const closingView = totalPhotoPages + 1;
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let currentView = 0;
+  let isTurning = false;
+
+  function photosForView(view) {
+    if (view < 1 || view > totalPhotoPages) return [];
+    const start = (view - 1) * photosPerPage;
+    return albumPhotos.slice(start, start + photosPerPage);
+  }
+
+  function buildPhotoFrame(photoIndex) {
+    const frame = document.createElement('figure');
+    frame.className = 'album-photo-frame';
+    const image = document.createElement('img');
+    image.alt = `Kenangan ${photoIndex + 1}`;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.hidden = true;
+    const placeholder = document.createElement('span');
+    placeholder.className = 'album-photo-frame__placeholder';
+    placeholder.textContent = 'Memuat...';
+    image.addEventListener('load', () => {
+      image.hidden = false;
+      placeholder.hidden = true;
     });
-    albumCounter.textContent = `${currentPage + 1} / ${totalPages}`;
-    albumPrev.disabled = currentPage === 0;
-    albumNext.disabled = currentPage === totalPages - 1;
+    image.addEventListener('error', () => {
+      placeholder.classList.add('album-photo-frame__placeholder--error');
+      placeholder.textContent = 'Foto belum bisa dibuka';
+    });
+    image.src = albumPhotos[photoIndex];
+    const caption = document.createElement('figcaption');
+    caption.className = 'album-photo-frame__caption';
+    caption.textContent = `Kenangan ${photoIndex + 1}`;
+    frame.append(placeholder, image, caption);
+    return frame;
   }
 
-  updateAlbumView();
+  function renderPhotoPage(container, view) {
+    const page = document.createElement('div');
+    page.className = 'photo-page';
+    const header = document.createElement('span');
+    header.className = 'photo-page__header';
+    header.textContent = 'Album Kita';
+    const grid = document.createElement('div');
+    grid.className = 'photo-page__grid';
+    const firstIndex = (view - 1) * photosPerPage;
+    photosForView(view).forEach((_, offset) => {
+      grid.appendChild(buildPhotoFrame(firstIndex + offset));
+    });
+    const number = document.createElement('span');
+    number.className = 'photo-page__number';
+    number.textContent = String(view);
+    page.append(header, grid, number);
+    container.appendChild(page);
+  }
 
-  albumPrev.addEventListener('click', () => {
-    if (currentPage > 0) {
-      currentPage -= 1;
-      updateAlbumView();
+  function renderCover(container) {
+    const cover = document.createElement('div');
+    cover.className = 'book-cover-art';
+    const flower = document.createElement('span');
+    flower.className = 'book-cover-art__flower';
+    flower.setAttribute('aria-hidden', 'true');
+    flower.innerHTML = '<svg viewBox="0 0 100 100" fill="none"><g fill="#d98fa1"><ellipse cx="50" cy="28" rx="11" ry="21"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(72 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(144 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(216 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(288 50 50)"/></g><circle cx="50" cy="50" r="10" fill="#c07b92"/></svg>';
+    const title = document.createElement('h3');
+    title.className = 'book-cover-art__title';
+    title.textContent = 'Album Kita';
+    const rule = document.createElement('span');
+    rule.className = 'book-cover-art__rule';
+    const date = document.createElement('span');
+    date.className = 'book-cover-art__date';
+    date.textContent = '14 Oktober 2006';
+    cover.append(flower, title, rule, date);
+    container.appendChild(cover);
+  }
+
+  function renderClosing(container) {
+    const closing = document.createElement('div');
+    closing.className = 'book-closing';
+    const flower = document.createElement('span');
+    flower.className = 'book-closing__flower';
+    flower.setAttribute('aria-hidden', 'true');
+    flower.innerHTML = '<svg viewBox="0 0 100 100" fill="none"><g fill="currentColor"><ellipse cx="50" cy="28" rx="11" ry="21"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(72 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(144 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(216 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(288 50 50)"/></g><circle cx="50" cy="50" r="10" fill="#fffdf8"/></svg>';
+    const text = document.createElement('p');
+    text.textContent = 'Terima kasih sudah membuka kenangan kita, halaman demi halaman.';
+    const heart = document.createElement('span');
+    heart.className = 'book-closing__heart';
+    heart.setAttribute('aria-hidden', 'true');
+    heart.textContent = '♡';
+    closing.append(flower, text, heart);
+    container.appendChild(closing);
+  }
+
+  function renderFace(container, view) {
+    container.replaceChildren();
+    container.classList.toggle('face--cover', view === 0);
+    if (view === 0) renderCover(container);
+    else if (view === closingView) renderClosing(container);
+    else renderPhotoPage(container, view);
+  }
+
+  function updateControls() {
+    if (currentView === 0) albumCounter.textContent = 'Sampul';
+    else if (currentView === closingView) albumCounter.textContent = 'Penutup';
+    else albumCounter.textContent = `${currentView} / ${totalPhotoPages}`;
+    albumPrev.disabled = currentView === 0;
+    albumNext.disabled = currentView === closingView;
+  }
+
+  function prefetch(view) {
+    photosForView(view).forEach((src) => {
+      const image = new Image();
+      image.src = src;
+      if (typeof image.decode === 'function') {
+        image.decode().catch(() => {});
+      }
+    });
+  }
+
+  function resetLeaf() {
+    bookLeaf.classList.add('no-transition');
+    bookLeaf.classList.remove('is-flipped');
+    void bookLeaf.offsetWidth;
+    bookLeaf.classList.remove('no-transition');
+  }
+
+  function finishTurn(targetView) {
+    isTurning = false;
+    bookLeaf.classList.remove('is-turning');
+    bookTurnShadow.classList.remove('is-on');
+    bookLeaf.style.visibility = 'hidden';
+    resetLeaf();
+    renderFace(bookPage, targetView);
+    currentView = targetView;
+    updateControls();
+    prefetch(currentView + 1);
+    prefetch(currentView - 1);
+  }
+
+  function turnForward() {
+    if (isTurning || currentView === closingView) return;
+    const targetView = currentView + 1;
+    if (reducedMotionQuery.matches) {
+      finishTurn(targetView);
+      return;
+    }
+    isTurning = true;
+    renderFace(leafFront, currentView);
+    renderFace(leafBack, targetView);
+    resetLeaf();
+    bookLeaf.style.visibility = 'visible';
+    bookLeaf.classList.add('is-turning');
+    bookTurnShadow.classList.add('is-on');
+    void bookLeaf.offsetWidth;
+    bookLeaf.classList.add('is-flipped');
+    window.setTimeout(() => finishTurn(targetView), 950);
+  }
+
+  function turnBackward() {
+    if (isTurning || currentView === 0) return;
+    const targetView = currentView - 1;
+    if (reducedMotionQuery.matches) {
+      finishTurn(targetView);
+      return;
+    }
+    isTurning = true;
+    renderFace(leafFront, targetView);
+    renderFace(leafBack, currentView);
+    bookLeaf.classList.add('no-transition');
+    bookLeaf.classList.add('is-flipped');
+    void bookLeaf.offsetWidth;
+    bookLeaf.classList.remove('no-transition');
+    bookLeaf.style.visibility = 'visible';
+    bookLeaf.classList.add('is-turning');
+    bookTurnShadow.classList.add('is-on');
+    void bookLeaf.offsetWidth;
+    bookLeaf.classList.remove('is-flipped');
+    window.setTimeout(() => finishTurn(targetView), 950);
+  }
+
+  function goToView(view) {
+    if (isTurning || view === currentView || view < 0 || view > closingView) return;
+    finishTurn(view);
+  }
+
+  albumPrev.addEventListener('click', turnBackward);
+  albumNext.addEventListener('click', turnForward);
+
+  albumBook.addEventListener('click', (event) => {
+    if (isTurning) return;
+    if (currentView === 0) {
+      turnForward();
+      return;
+    }
+    if (currentView === closingView) {
+      turnBackward();
+      return;
+    }
+    const rect = albumBook.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    if (clickX < rect.width * 0.38) turnBackward();
+    else turnForward();
+  });
+
+  albumBook.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      turnForward();
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      turnBackward();
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      goToView(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      goToView(closingView);
     }
   });
 
-  albumNext.addEventListener('click', () => {
-    if (currentPage < totalPages - 1) {
-      currentPage += 1;
-      updateAlbumView();
-    }
-  });
+  renderFace(bookPage, 0);
+  updateControls();
+  prefetch(1);
 }
 
 renderAlbum();

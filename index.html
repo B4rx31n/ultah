@@ -75,12 +75,12 @@
     <div id="birthdayPage" hidden>
       <header class="site-header">
         <a class="wordmark" href="#atas" aria-label="Kembali ke awal halaman">untukmu<span class="wordmark-period">.</span></a>
-        <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" aria-label="Putar musik romantis">
+        <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" aria-label="Putar Love Songs">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 18V5l10-2v13M10 18c0 1.7-1.8 3-4 3s-4-1.3-4-3 1.8-3 4-3 4 1.3 4 3Zm10-2c0 1.7-1.8 3-4 3s-4-1.3-4-3 1.8-3 4-3 4 1.3 4 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span id="musicLabel">Putar musik</span>
+          <span id="musicLabel">Putar lagu</span>
           <span class="music-waves" aria-hidden="true"><i></i><i></i><i></i></span>
         </button>
-        <audio id="romanceAudio" src="assets/romance.wav" preload="auto" loop></audio>
+        <audio id="romanceAudio" src="music/love-songs.mp3" preload="none" loop></audio>
         <span class="sr-only" id="musicStatus" role="status" aria-live="polite"></span>
       </header>
 
@@ -210,21 +210,37 @@
           <div class="album-heading">
             <p class="chapter-label">album foto kami</p>
             <h2 id="albumTitle">Halaman demi halaman,<br /><em>momen berharga.</em></h2>
-            <p>Buku album dengan setiap halaman berisi 9 foto dalam bingkai indah. Geser halaman untuk melihat lebih banyak.</p>
+            <p>Buku album dengan setiap halaman berisi 9 foto dalam bingkai. Buka sampulnya, lalu balik halamannya seperti buku biasa.</p>
           </div>
-          <div class="album-container" role="region" aria-label="Album foto flip-page">
-            <div class="album-book">
-              <div class="album-pages" id="albumPages"></div>
-              <div class="album-controls">
-                <button class="album-button album-prev" id="albumPrev" aria-label="Halaman sebelumnya">
-                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <span class="album-counter" id="albumCounter">1</span>
-                <button class="album-button album-next" id="albumNext" aria-label="Halaman berikutnya">
-                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
+          <div class="album-container" id="albumContainer">
+            <div class="book-scene">
+              <div class="album-book" id="albumBook" role="group" aria-label="Buku album foto. Klik sisi kanan atau kiri buku, atau pakai tombol panah, untuk membalik halaman." tabindex="0">
+                <div class="book-shadow" aria-hidden="true"></div>
+                <div class="book-back-cover" aria-hidden="true"></div>
+                <div class="book-ribbon" aria-hidden="true"></div>
+                <div class="book-pagestack" id="bookPagestack">
+                  <div class="book-page" id="bookPage"></div>
+                  <div class="book-leaf" id="bookLeaf" aria-hidden="true">
+                    <div class="leaf-face leaf-front" id="leafFront"></div>
+                    <div class="leaf-face leaf-back" id="leafBack"></div>
+                  </div>
+                  <div class="book-turn-shadow" id="bookTurnShadow" aria-hidden="true"></div>
+                </div>
+                <div class="book-spine" aria-hidden="true"><span class="book-spine-title">Album Kita</span></div>
+                <div class="book-edge book-edge--right" aria-hidden="true"></div>
+                <div class="book-edge book-edge--bottom" aria-hidden="true"></div>
               </div>
             </div>
+            <div class="album-controls">
+              <button class="album-button album-prev" id="albumPrev" type="button" aria-label="Halaman sebelumnya">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="album-counter" id="albumCounter" role="status" aria-live="polite">Sampul</span>
+              <button class="album-button album-next" id="albumNext" type="button" aria-label="Halaman berikutnya">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <p class="album-hint">klik sisi buku atau balik dengan tombol panah</p>
           </div>
           <a href="#atas" class="album-close" aria-label="Kembali ke atas">Tutup album <span aria-hidden="true">↑</span></a>
         </section>
