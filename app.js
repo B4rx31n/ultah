@@ -12,6 +12,7 @@ const revealNote = document.getElementById('revealNote');
 const storyLink = document.getElementById('storyLink');
 const storySection = document.getElementById('cerita');
 const letterSection = document.getElementById('surat');
+const albumSection = document.getElementById('album');
 const musicToggle = document.getElementById('musicToggle');
 const musicLabel = document.getElementById('musicLabel');
 
@@ -154,11 +155,10 @@ function renderMemories() {
 renderMemories();
 
 function renderMemoryPhotoRain() {
-  const memories = window.BIRTHDAY_CONTENT?.memories || [];
-  const photoCount = Math.min(12, memories.length * 3);
+  const albumPhotos = window.BIRTHDAY_CONTENT?.albumPhotos || [];
+  const photoCount = 40;
 
   for (let index = 0; index < photoCount; index += 1) {
-    const memory = memories[index % memories.length];
     const photo = document.createElement('span');
     photo.className = 'memory-rain-photo';
     const xPosition = ((index * 37 + 11) % 89) / 89;
@@ -172,12 +172,13 @@ function renderMemoryPhotoRain() {
     image.hidden = true;
     const placeholder = document.createElement('span');
     placeholder.className = 'memory-rain-photo__placeholder';
-    placeholder.textContent = memory.photo ? 'Memuat foto...' : 'Tambahkan foto';
+    placeholder.textContent = albumPhotos.length ? 'Memuat foto...' : 'Tambahkan foto';
     const caption = document.createElement('span');
     caption.className = 'memory-rain-photo__caption';
-    caption.textContent = memory.caption || memory.title || `Kenangan ${index + 1}`;
+    caption.textContent = `Kenangan ${index + 1}`;
 
-    if (memory.photo) {
+    if (albumPhotos.length) {
+      const photoPath = albumPhotos[index % albumPhotos.length];
       image.addEventListener('load', () => {
         image.hidden = false;
         placeholder.hidden = true;
@@ -185,7 +186,7 @@ function renderMemoryPhotoRain() {
       image.addEventListener('error', () => {
         placeholder.textContent = 'Periksa content.js';
       });
-      image.src = memory.photo;
+      image.src = photoPath;
     }
 
     photo.append(image, placeholder, caption);
@@ -276,6 +277,7 @@ giftButton.addEventListener('click', () => {
       document.querySelector('.hero-description').textContent = 'Bunganya sudah mekar untukmu. Kalau sudah siap, ada cerita kecil yang menunggu di bawah.';
       storySection.hidden = false;
       letterSection.hidden = false;
+      albumSection.hidden = false;
       storyLink.hidden = false;
       revealNote.classList.add('visible');
     }
@@ -310,3 +312,82 @@ giftButton.addEventListener('click', () => {
   if (giftOpened && !reducedMotion) window.setTimeout(burst, 300);
   else burst();
 });
+
+function renderAlbum() {
+  const albumPhotos = window.BIRTHDAY_CONTENT?.albumPhotos || [];
+  if (!albumPhotos.length) return;
+
+  const photosPerPage = 9;
+  const totalPages = Math.ceil(albumPhotos.length / photosPerPage);
+  const albumPages = document.getElementById('albumPages');
+  const albumCounter = document.getElementById('albumCounter');
+  const albumPrev = document.getElementById('albumPrev');
+  const albumNext = document.getElementById('albumNext');
+
+  let currentPage = 0;
+
+  for (let pageNum = 0; pageNum < totalPages; pageNum += 1) {
+    const page = document.createElement('div');
+    page.className = `album-page ${pageNum === 0 ? 'active' : 'next'}`;
+    page.setAttribute('data-page', String(pageNum));
+
+    for (let i = 0; i < photosPerPage; i += 1) {
+      const photoIndex = pageNum * photosPerPage + i;
+      const photoPath = albumPhotos[photoIndex];
+      if (!photoPath) break;
+
+      const frame = document.createElement('div');
+      frame.className = 'album-photo-frame';
+      const img = document.createElement('img');
+      img.alt = `Foto ${photoIndex + 1}`;
+      img.hidden = true;
+      const placeholder = document.createElement('div');
+      placeholder.className = 'album-photo-frame__placeholder';
+      placeholder.textContent = 'Memuat...';
+
+      img.addEventListener('load', () => {
+        img.hidden = false;
+        placeholder.hidden = true;
+      });
+      img.addEventListener('error', () => {
+        placeholder.textContent = 'Gagal muat';
+      });
+      img.src = photoPath;
+
+      frame.append(placeholder, img);
+      page.appendChild(frame);
+    }
+    albumPages.appendChild(page);
+  }
+
+  function updateAlbumView() {
+    document.querySelectorAll('.album-page').forEach((p) => {
+      p.classList.remove('active', 'prev', 'next');
+      const pageNum = Number(p.dataset.page);
+      if (pageNum === currentPage) p.classList.add('active');
+      else if (pageNum < currentPage) p.classList.add('prev');
+      else p.classList.add('next');
+    });
+    albumCounter.textContent = `${currentPage + 1} / ${totalPages}`;
+    albumPrev.disabled = currentPage === 0;
+    albumNext.disabled = currentPage === totalPages - 1;
+  }
+
+  updateAlbumView();
+
+  albumPrev.addEventListener('click', () => {
+    if (currentPage > 0) {
+      currentPage -= 1;
+      updateAlbumView();
+    }
+  });
+
+  albumNext.addEventListener('click', () => {
+    if (currentPage < totalPages - 1) {
+      currentPage += 1;
+      updateAlbumView();
+    }
+  });
+}
+
+renderAlbum();
