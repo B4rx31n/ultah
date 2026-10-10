@@ -1,4 +1,6 @@
 const lockScreen = document.getElementById('lockScreen');
+const calendarPage = document.getElementById('calendarPage');
+const birthdayMessagePage = document.getElementById('birthdayMessagePage');
 const birthdayPage = document.getElementById('birthdayPage');
 const unlockForm = document.getElementById('unlockForm');
 const pinInput = document.getElementById('pinInput');
@@ -7,7 +9,6 @@ const pinMessage = document.getElementById('pinMessage');
 const phone = document.getElementById('phone');
 const giftButton = document.getElementById('giftButton');
 const giftAction = document.getElementById('giftAction');
-const memoryPhotoRain = document.getElementById('memoryPhotoRain');
 const revealNote = document.getElementById('revealNote');
 const storyLink = document.getElementById('storyLink');
 const storySection = document.getElementById('cerita');
@@ -18,6 +19,26 @@ const musicLabel = document.getElementById('musicLabel');
 const romanceAudio = document.getElementById('romanceAudio');
 const musicStatus = document.getElementById('musicStatus');
 let musicWasChosen = false;
+
+function showJourneyPage(pageId) {
+  const pages = [lockScreen, calendarPage, birthdayMessagePage, birthdayPage];
+  const page = pages.find((candidate) => candidate.id === pageId);
+  if (!page) {
+    throw new Error(`Halaman kejutan tidak ditemukan: ${pageId}`);
+  }
+
+  pages.forEach((candidate) => {
+    candidate.hidden = candidate !== page;
+  });
+  window.scrollTo(0, 0);
+  page.querySelector('h1, h2')?.focus({ preventScroll: true });
+}
+
+document.querySelectorAll('[data-journey-page]').forEach((button) => {
+  button.addEventListener('click', () => showJourneyPage(button.dataset.journeyPage));
+});
+document.getElementById('calendarNext').addEventListener('click', () => showJourneyPage('birthdayMessagePage'));
+document.getElementById('birthdayNext').addEventListener('click', () => showJourneyPage('birthdayPage'));
 
 function updateMusicButton() {
   const playing = !romanceAudio.paused && !romanceAudio.ended;
@@ -88,10 +109,8 @@ document.getElementById('deleteKey').addEventListener('click', () => {
 
 unlockForm.addEventListener('submit', (event) => {
   event.preventDefault();
-  if (pinInput.value === '14102006') {
-    lockScreen.hidden = true;
-    birthdayPage.hidden = false;
-    window.scrollTo(0, 0);
+  if (pinInput.value === '11102006') {
+    showJourneyPage('calendarPage');
     makePetals();
     return;
   }
@@ -123,232 +142,79 @@ function makePetals() {
 function renderMemories() {
   const memoryList = document.getElementById('memoryList');
   const memories = window.BIRTHDAY_CONTENT?.memories || [];
+  const soloPhotos = window.BIRTHDAY_CONTENT?.soloPhotos || [];
 
-  if (!memories.length) {
+  if (!soloPhotos.length) {
     const empty = document.createElement('p');
     empty.className = 'memory-empty';
-    empty.textContent = 'Belum ada cerita. Tambahkan kenangan kalian di content.js.';
+    empty.textContent = 'Belum ada foto cerita. Tambahkan foto ke soloPhotos di content.js.';
     memoryList.appendChild(empty);
     return;
   }
 
-  memories.forEach((memory, index) => {
-    const article = document.createElement('article');
-    article.className = 'memory';
-
-    const frame = document.createElement('div');
+  function buildMemoryPhotoFrame(memory, src, photoIndex) {
+    const frame = document.createElement('figure');
     frame.className = 'photo-frame';
     const stage = document.createElement('div');
     stage.className = 'photo-stage';
     const photoState = document.createElement('div');
     photoState.className = 'photo-empty';
-    photoState.innerHTML = '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 56V31m0 14c-10 0-17-5-18-12 9-1 16 3 18 12Zm0-9c9-1 16-7 17-14-9 0-16 5-17 14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M32 11c-9-12-20 3-8 10-13 2-7 17 4 11 1 12 16 11 17-1 12 5 17-9 5-13C56 7 42 3 38 15c-1-6-3-8-6-4Z" stroke="currentColor" stroke-width="1.5"/><circle cx="36" cy="23" r="5" stroke="currentColor" stroke-width="1.5"/></svg>';
     const stateTitle = document.createElement('span');
     const stateDetail = document.createElement('small');
     photoState.append(stateTitle, stateDetail);
     stage.appendChild(photoState);
-
-    if (memory.photo) {
-      stateTitle.textContent = 'Menyiapkan fotonya...';
-      stateDetail.textContent = '';
-      photoState.classList.add('photo-loading');
-      const image = document.createElement('img');
-      image.alt = memory.alt || memory.title;
-      image.hidden = true;
-      image.addEventListener('load', () => {
-        photoState.hidden = true;
-        image.hidden = false;
-      });
-      image.addEventListener('error', () => {
-        photoState.classList.remove('photo-loading');
-        stateTitle.textContent = 'Foto belum bisa dibuka';
-        stateDetail.textContent = 'Periksa nama file di content.js.';
-      });
-      stage.appendChild(image);
-      image.src = memory.photo;
-    } else {
-      stateTitle.textContent = 'Tempat foto kalian';
-      stateDetail.textContent = 'Tambahkan foto asli di content.js';
-    }
-
+    stateTitle.textContent = 'Memuat foto...';
+    stateDetail.textContent = '';
+    photoState.classList.add('photo-loading');
+    const image = document.createElement('img');
+    image.alt = memory.alt || `Foto kenangan ${photoIndex + 1}`;
+    image.decoding = 'async';
+    image.hidden = true;
+    image.addEventListener('load', () => {
+      photoState.hidden = true;
+      image.hidden = false;
+    });
+    image.addEventListener('error', () => {
+      photoState.classList.remove('photo-loading');
+      stateTitle.textContent = 'Foto belum bisa dibuka';
+      stateDetail.textContent = 'Periksa nama file di content.js.';
+    });
+    stage.appendChild(image);
+    image.src = src;
     const caption = document.createElement('span');
     caption.className = 'photo-caption';
-    caption.textContent = memory.caption || 'kenangan kita';
+    caption.textContent = `${memory.caption || 'kenangan kita'} · ${photoIndex + 1}`;
     frame.append(stage, caption);
+    return frame;
+  }
+
+  soloPhotos.forEach((photo, index) => {
+    const memory = memories[index] || {};
+    const article = document.createElement('article');
+    article.className = 'memory';
+
+    const photoFrame = buildMemoryPhotoFrame(memory, photo, index);
 
     const copy = document.createElement('div');
     copy.className = 'memory-copy';
     const number = document.createElement('span');
     number.className = 'memory-number';
     number.textContent = String(index + 1).padStart(2, '0');
-    const title = document.createElement('h3');
-    title.textContent = memory.title || 'Cerita kita';
     const story = document.createElement('p');
-    story.textContent = memory.story || memory.prompt || 'Tulis cerita kalian di content.js.';
-    copy.append(number, title, story);
+    story.textContent = memory.story || memory.prompt || 'Tuliskan satu kalimat untuk foto ini di content.js.';
+    copy.append(number, story);
     if (!memory.story) {
       const tag = document.createElement('span');
       tag.className = 'memory-placeholder-tag';
       tag.textContent = 'Ruang untuk kisah kalian';
       copy.appendChild(tag);
     }
-    article.append(frame, copy);
+    article.append(photoFrame, copy);
     memoryList.appendChild(article);
   });
 }
 
 renderMemories();
-
-function renderMemoryPhotoRain() {
-  const albumPhotos = window.BIRTHDAY_CONTENT?.albumPhotos || [];
-  const photoCount = 5;
-  const photoCards = Array.from({ length: photoCount }, () => {
-    const photo = document.createElement('span');
-    photo.className = 'memory-rain-photo';
-    const image = document.createElement('img');
-    image.alt = '';
-    image.decoding = 'async';
-    image.hidden = true;
-    const placeholder = document.createElement('span');
-    placeholder.className = 'memory-rain-photo__placeholder';
-    placeholder.textContent = albumPhotos.length ? 'Memuat foto...' : 'Tambahkan foto';
-    const caption = document.createElement('span');
-    caption.className = 'memory-rain-photo__caption';
-    photo.append(image, placeholder, caption);
-    memoryPhotoRain.appendChild(photo);
-    return { photo, image, placeholder, caption };
-  });
-
-  let currentPhotoIndex = 0;
-  let cooldownTimer = null;
-  let rainIsActive = false;
-  let onFirstFallComplete = null;
-  let currentBatchToken = 0;
-  let finishedPhotoCount = 0;
-
-  function loadPhoto(card, index, xPosition, onReady) {
-    const { photo, image, placeholder, caption } = card;
-    photo.dataset.index = String(index);
-    photo.dataset.xPosition = String(xPosition);
-    photo.style.top = `${Math.round(Math.random() * 300 - 100)}px`;
-    photo.style.setProperty('--rain-tilt', `${Math.round(Math.random() * 56 - 28)}deg`);
-    photo.style.setProperty('--rain-spin', `${Math.round(Math.random() * 360 - 180)}deg`);
-    photo.style.setProperty('--rain-delay', `${Math.random() * 1400}ms`);
-    photo.style.setProperty('--rain-duration', `${5.5 + Math.random() * 3}s`);
-    positionMemoryPhotoRain();
-    caption.textContent = `Kenangan ${index + 1}`;
-    image.hidden = true;
-    placeholder.hidden = false;
-    placeholder.textContent = albumPhotos.length ? 'Memuat foto...' : 'Tambahkan foto';
-
-    if (!albumPhotos.length) {
-      onReady();
-      return;
-    }
-
-    let settled = false;
-    const settle = (loaded) => {
-      if (settled) return;
-      settled = true;
-      if (loaded) {
-        image.hidden = false;
-        placeholder.hidden = true;
-      } else {
-        placeholder.textContent = 'Periksa content.js';
-      }
-      onReady();
-    };
-    image.onload = () => settle(true);
-    image.onerror = () => settle(false);
-    image.src = albumPhotos[index];
-    if (image.complete) {
-      window.setTimeout(() => settle(image.naturalWidth > 0), 0);
-    }
-  }
-
-  function startPhotoFall(batchToken) {
-    if (!rainIsActive || batchToken !== currentBatchToken) return;
-    memoryPhotoRain.classList.remove('is-falling');
-    photoCards.forEach(({ photo }) => void photo.offsetWidth);
-    finishedPhotoCount = 0;
-    memoryPhotoRain.classList.add('is-falling');
-  }
-
-  function startPhotoBatch() {
-    if (!rainIsActive) return;
-    const batchToken = ++currentBatchToken;
-    const photoSlots = photoCards.map(() => 0.04 + Math.random() * 0.92);
-
-    let remainingPhotos = photoCards.length;
-    photoCards.forEach((card, offset) => {
-      const photoIndex = albumPhotos.length
-        ? (currentPhotoIndex + offset) % albumPhotos.length
-        : currentPhotoIndex + offset;
-      loadPhoto(card, photoIndex, photoSlots[offset], () => {
-        if (!rainIsActive || batchToken !== currentBatchToken) return;
-        remainingPhotos -= 1;
-        if (remainingPhotos === 0) startPhotoFall(batchToken);
-      });
-    });
-  }
-
-  photoCards.forEach(({ photo }) => photo.addEventListener('animationend', (event) => {
-    if (event.animationName !== 'memory-photo-fall' || !rainIsActive) return;
-    finishedPhotoCount += 1;
-    if (finishedPhotoCount < photoCards.length) return;
-
-    memoryPhotoRain.classList.remove('is-falling');
-    if (onFirstFallComplete) {
-      const callback = onFirstFallComplete;
-      onFirstFallComplete = null;
-      callback();
-    }
-    if (!rainIsActive) return;
-
-    cooldownTimer = window.setTimeout(() => {
-      if (!rainIsActive) return;
-      currentPhotoIndex = (currentPhotoIndex + photoCards.length)
-        % Math.max(albumPhotos.length, photoCards.length);
-      startPhotoBatch();
-    }, 15000);
-  }));
-
-  function stopPhotoRain() {
-    rainIsActive = false;
-    currentBatchToken += 1;
-    window.clearTimeout(cooldownTimer);
-    cooldownTimer = null;
-    onFirstFallComplete = null;
-    memoryPhotoRain.classList.remove('is-falling');
-  }
-
-  function startPhotoRain(onInitialFallComplete) {
-    stopPhotoRain();
-    rainIsActive = true;
-    currentPhotoIndex = 0;
-    onFirstFallComplete = onInitialFallComplete;
-    startPhotoBatch();
-  }
-
-  positionMemoryPhotoRain();
-  return { startPhotoRain, stopPhotoRain };
-}
-
-function positionMemoryPhotoRain() {
-  const viewportWidth = document.documentElement.clientWidth;
-  const photoWidth = Math.min(88, Math.max(58, viewportWidth * 0.08));
-  const inset = Math.min(24, viewportWidth * 0.06);
-  memoryPhotoRain.querySelectorAll('.memory-rain-photo').forEach((photo) => {
-    const availableWidth = Math.max(0, viewportWidth - photoWidth - inset * 2);
-    const index = Number(photo.dataset.index);
-    const drift = Math.round((((index * 53) % 101) - 50) * Math.min(0.48, viewportWidth / 800));
-    photo.style.left = `${Math.round(inset + Number(photo.dataset.xPosition) * availableWidth)}px`;
-    photo.style.setProperty('--rain-drift', `${drift}px`);
-  });
-}
-
-const photoRain = renderMemoryPhotoRain();
-window.addEventListener('resize', positionMemoryPhotoRain);
 
 let giftOpened = false;
 let giftOpening = false;
@@ -358,7 +224,6 @@ giftButton.addEventListener('click', () => {
   giftButton.disabled = true;
   giftButton.setAttribute('aria-label', 'Kado sedang dibuka');
   giftButton.classList.remove('is-bursting', 'is-blooming');
-  photoRain.stopPhotoRain();
   giftAction.textContent = 'siap-siap, pitanya akan beterbangan...';
 
   if (!musicWasChosen && romanceAudio.paused) startMusic();
@@ -377,15 +242,14 @@ giftButton.addEventListener('click', () => {
     giftOpening = false;
     giftButton.disabled = false;
     giftButton.setAttribute('aria-expanded', 'true');
-    giftButton.setAttribute('aria-label', 'Ulangi kejutan pita, bunga, dan foto');
+    giftButton.setAttribute('aria-label', 'Ulangi kejutan pita dan bunga');
     giftAction.innerHTML = 'sentuh untuk ulangi kejutan <span aria-hidden="true">↗</span>';
   }
 
   function bloom() {
     giftButton.classList.add('is-blooming');
     giftAction.textContent = 'bunganya sedang muncul...';
-    if (reducedMotion) finishReveal();
-    else photoRain.startPhotoRain(finishReveal);
+    finishReveal();
   }
 
   function burst() {
@@ -401,6 +265,8 @@ giftButton.addEventListener('click', () => {
 
 function renderAlbum() {
   const albumPhotos = window.BIRTHDAY_CONTENT?.albumPhotos || [];
+  const coverPhotos = window.BIRTHDAY_CONTENT?.coverPhotos || [];
+  const introPages = window.BIRTHDAY_CONTENT?.introPages || [];
   const albumContainer = document.getElementById('albumContainer');
   const albumBook = document.getElementById('albumBook');
   const bookPage = document.getElementById('bookPage');
@@ -429,7 +295,9 @@ function renderAlbum() {
   const photosPerPage = 9;
   const totalPhotoPages = Math.ceil(albumPhotos.length / photosPerPage);
   const totalPhotoSpreads = Math.ceil(totalPhotoPages / 2);
-  const closingView = totalPhotoSpreads + 1;
+  const totalIntroPages = coverPhotos.length + introPages.length;
+  const totalIntroSpreads = Math.ceil(totalIntroPages / 2);
+  const closingView = totalIntroSpreads + totalPhotoSpreads + 1;
   const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   let currentView = 0;
   let isTurning = false;
@@ -467,6 +335,52 @@ function renderAlbum() {
     return frame;
   }
 
+  function renderCoverPhotoPage(container, photoIndex) {
+    const page = document.createElement('div');
+    page.className = 'opening-photo-page';
+    const label = document.createElement('span');
+    label.className = 'opening-photo-page__label';
+    label.textContent = `Foto pembuka ${photoIndex + 1}`;
+    const frame = document.createElement('figure');
+    frame.className = 'opening-photo-page__frame';
+    const image = document.createElement('img');
+    image.src = coverPhotos[photoIndex];
+    image.alt = `Foto pembuka ${photoIndex + 1}`;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    const caption = document.createElement('figcaption');
+    caption.textContent = 'sebelum cerita dimulai';
+    image.addEventListener('error', () => {
+      image.hidden = true;
+      caption.textContent = 'Foto belum bisa dibuka. Periksa folder cover/.';
+    });
+    frame.append(image, caption);
+    page.append(label, frame);
+    container.appendChild(page);
+  }
+
+  function renderIntroPage(container, pageIndex) {
+    const intro = introPages[pageIndex];
+    const page = document.createElement('div');
+    page.className = 'album-intro-page';
+    const number = document.createElement('span');
+    number.className = 'album-intro-page__number';
+    number.textContent = `pembuka ${String(pageIndex + 1).padStart(2, '0')}`;
+    const eyebrow = document.createElement('span');
+    eyebrow.className = 'album-intro-page__eyebrow';
+    eyebrow.textContent = intro.eyebrow;
+    const title = document.createElement('h3');
+    title.textContent = intro.title;
+    const body = document.createElement('p');
+    body.textContent = intro.body;
+    const ornament = document.createElement('span');
+    ornament.className = 'album-intro-page__ornament';
+    ornament.setAttribute('aria-hidden', 'true');
+    ornament.textContent = '❧';
+    page.append(number, eyebrow, title, body, ornament);
+    container.appendChild(page);
+  }
+
   function renderPhotoPage(container, view) {
     const page = document.createElement('div');
     page.className = 'photo-page';
@@ -500,7 +414,7 @@ function renderAlbum() {
     rule.className = 'book-cover-art__rule';
     const date = document.createElement('span');
     date.className = 'book-cover-art__date';
-    date.textContent = '14 Oktober 2006';
+    date.textContent = '11 Oktober 2006';
     cover.append(flower, title, rule, date);
     container.appendChild(cover);
   }
@@ -529,29 +443,46 @@ function renderAlbum() {
       container.classList.remove('face--spread');
       renderCover(container);
     } else if (view === closingView) {
-      renderSpread(container, totalPhotoPages, closingView);
+      renderSpread(container, [
+        { type: 'album', index: totalPhotoPages },
+        { type: 'closing' }
+      ]);
+    } else if (view <= totalIntroSpreads) {
+      const firstIntroPage = (view - 1) * 2;
+      renderSpread(container, [
+        { type: 'intro', index: firstIntroPage },
+        { type: 'intro', index: firstIntroPage + 1 }
+      ]);
     } else {
-      const firstPage = (view - 1) * 2 + 1;
-      renderSpread(container, firstPage, firstPage + 1 <= totalPhotoPages ? firstPage + 1 : 0);
+      const albumSpread = view - totalIntroSpreads;
+      const firstPage = (albumSpread - 1) * 2 + 1;
+      renderSpread(container, [
+        { type: 'album', index: firstPage },
+        { type: 'album', index: firstPage + 1 }
+      ]);
     }
   }
 
-  function renderSpread(container, leftView, rightView) {
+  function renderSpread(container, pages) {
     container.replaceChildren();
     container.classList.remove('face--cover');
     container.classList.add('face--spread');
     const spread = document.createElement('div');
     spread.className = 'book-spread';
 
-    [[leftView, 'left'], [rightView, 'right']].forEach(([view, side]) => {
+    pages.forEach(({ type, index }, pageIndex) => {
       const page = document.createElement('div');
-      page.className = `book-page__side book-page__side--${side}`;
-      if (view === 0) {
+      page.className = `book-page__side book-page__side--${pageIndex === 0 ? 'left' : 'right'}`;
+      if (type === 'blank') {
         page.classList.add('book-page__side--blank');
-      } else if (view === closingView) {
+      } else if (type === 'closing') {
         renderClosing(page);
+      } else if (type === 'intro') {
+        if (index < coverPhotos.length) renderCoverPhotoPage(page, index);
+        else if (index < totalIntroPages) renderIntroPage(page, index - coverPhotos.length);
+        else page.classList.add('book-page__side--blank');
       } else {
-        renderPhotoPage(page, view);
+        renderPhotoPage(page, index);
       }
       spread.appendChild(page);
     });
@@ -563,8 +494,15 @@ function renderAlbum() {
     container.replaceChildren();
     container.classList.remove('face--cover', 'face--spread');
     if (view === closingView) renderClosing(container);
-    else if (view > 0 && view <= totalPhotoPages) renderPhotoPage(container, view);
-    else renderBlankPage(container);
+    else if (view > 0 && view <= totalIntroSpreads) {
+      const firstIntroPage = (view - 1) * 2;
+      if (firstIntroPage < coverPhotos.length) renderCoverPhotoPage(container, firstIntroPage);
+      else if (firstIntroPage < totalIntroPages) renderIntroPage(container, firstIntroPage - coverPhotos.length);
+      else renderBlankPage(container);
+    } else if (view > totalIntroSpreads && view < closingView) {
+      const albumSpread = view - totalIntroSpreads;
+      renderPhotoPage(container, (albumSpread - 1) * 2 + 1);
+    } else renderBlankPage(container);
   }
 
   function renderBlankPage(container) {
@@ -578,8 +516,14 @@ function renderAlbum() {
   function updateControls() {
     if (currentView === 0) albumCounter.textContent = 'Sampul';
     else if (currentView === closingView) albumCounter.textContent = 'Penutup';
-    else {
+    else if (currentView <= totalIntroSpreads) {
       const firstPage = (currentView - 1) * 2 + 1;
+      const lastPage = Math.min(firstPage + 1, totalIntroPages);
+      albumCounter.textContent = `Pembuka ${firstPage}–${lastPage} / ${totalIntroPages}`;
+    }
+    else {
+      const albumSpread = currentView - totalIntroSpreads;
+      const firstPage = (albumSpread - 1) * 2 + 1;
       const lastPage = Math.min(firstPage + 1, totalPhotoPages);
       albumCounter.textContent = firstPage === lastPage
         ? `${firstPage} / ${totalPhotoPages}`
@@ -625,8 +569,11 @@ function renderAlbum() {
     renderFace(bookPage, targetView);
     currentView = targetView;
     updateControls();
-    prefetchSpread(currentView + 1);
-    prefetchSpread(currentView - 1);
+    if (currentView > totalIntroSpreads && currentView < closingView) {
+      const albumSpread = currentView - totalIntroSpreads;
+      prefetchSpread(albumSpread + 1);
+      prefetchSpread(albumSpread - 1);
+    }
   }
 
   function turnForward() {

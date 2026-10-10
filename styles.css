@@ -73,6 +73,50 @@ a { color: inherit; }
 .phone.shake { animation: phone-shake .4s ease; }
 @keyframes phone-shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
 
+.journey-page { min-height: 100dvh; padding: clamp(24px,5vw,64px); background: var(--cream); }
+.journey-shell { width: min(100%, 1080px); min-height: calc(100dvh - clamp(48px,10vw,128px)); margin: 0 auto; display: flex; flex-direction: column; }
+.journey-topline { display: flex; justify-content: space-between; align-items: center; padding-bottom: 18px; border-bottom: 1px solid var(--line); color: var(--rose-deep); font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.journey-topline i, .journey-header-nav i { color: var(--rose); font-style: normal; margin: 0 4px; }
+.calendar-layout { flex: 1; display: grid; grid-template-columns: minmax(0, .9fr) minmax(320px, 1fr); align-items: center; gap: clamp(42px,9vw,120px); padding: clamp(50px,9vh,100px) 0; }
+.calendar-copy .chapter-label { margin-bottom: 22px; }
+.calendar-copy h1, .birthday-message h1 { margin: 0; font-family: var(--serif); font-size: clamp(3rem,6.5vw,5.5rem); font-weight: 400; letter-spacing: -.065em; line-height: 1.08; }
+.calendar-copy h1 em, .birthday-message h1 em { color: var(--rose-deep); font-weight: 400; }
+.calendar-copy > p:not(.chapter-label) { max-width: 350px; margin: 24px 0 0; color: var(--muted); line-height: 1.8; }
+.calendar-copy .calendar-caption { display: flex; align-items: center; gap: 10px; color: var(--rose-deep); font-family: var(--serif); font-style: italic; }
+.calendar-caption span { font-size: 1.25rem; }
+.calendar-card { width: min(100%, 440px); justify-self: center; padding: clamp(22px,4vw,38px); border: 1px solid var(--line); background: var(--paper); box-shadow: 0 15px 35px rgba(105,56,71,.08); }
+.calendar-month { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; font-family: var(--serif); font-size: 1.4rem; }
+.calendar-month span + span { color: var(--muted); font-family: var(--sans); font-size: .8rem; }
+.calendar-weekdays, .calendar-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); justify-items: center; align-items: center; }
+.calendar-weekdays { margin-bottom: 10px; color: var(--muted); font-size: .67rem; font-weight: 700; }
+.calendar-day { position: relative; display: grid; width: 36px; aspect-ratio: 1; place-items: center; color: var(--ink); font-size: .85rem; }
+.calendar-day--muted { color: #c9b7bb; }
+.calendar-day--birthday { color: #fff; font-weight: 700; }
+.calendar-day--birthday::before { position: absolute; z-index: 0; inset: 1px; border: 1px solid var(--rose-deep); border-radius: 50%; background: var(--rose-deep); content: ''; }
+.calendar-day--birthday > span { position: relative; z-index: 1; }
+.calendar-legend { display: flex; align-items: center; gap: 9px; margin: 21px 0 0; color: var(--muted); font-size: .72rem; }
+.calendar-legend span { width: 10px; height: 10px; border-radius: 50%; background: var(--rose-deep); }
+.journey-actions { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-top: 20px; border-top: 1px solid var(--line); }
+.journey-back, .journey-next { min-height: 46px; padding: 10px 18px; border: 1px solid var(--rose-deep); font-size: .78rem; font-weight: 700; }
+.journey-back { background: transparent; color: var(--rose-deep); }
+.journey-back:hover { background: var(--blush); }
+.journey-next { background: var(--rose-deep); color: #fff; }
+.journey-next:hover { background: #653047; }
+.journey-next span { padding-left: 8px; }
+.birthday-message-page { position: relative; display: grid; overflow: hidden; background: #f4dce1; }
+.birthday-message-page::before, .birthday-message-page::after { position: absolute; width: min(72vw, 700px); aspect-ratio: 1; border: 1px solid rgba(130,65,83,.13); border-radius: 50%; content: ''; pointer-events: none; }
+.birthday-message-page::before { top: 48%; left: 50%; transform: translate(-50%,-50%); }
+.birthday-message-page::after { top: 48%; left: 50%; transform: translate(-50%,-50%) scale(1.28); }
+.birthday-message-shell { position: relative; z-index: 1; }
+.birthday-message { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 55px 16px; text-align: center; }
+.birthday-message-flower { margin-bottom: 14px; color: var(--rose-deep); font-size: 3rem; opacity: .75; }
+.birthday-message .chapter-label { justify-content: center; margin-bottom: 22px; }
+.birthday-message h1 { font-size: clamp(3.3rem,8vw,6.5rem); }
+.birthday-message-copy { max-width: 540px; margin: 27px 0 0; color: var(--muted); font-size: clamp(.96rem,1.4vw,1.08rem); line-height: 1.9; }
+.birthday-message-signoff { margin: 30px 0 0; color: var(--rose-deep); font-family: var(--serif); font-style: italic; }
+.birthday-message-signoff span { padding-left: 5px; }
+.journey-header-nav { display: flex; align-items: center; gap: 16px; color: var(--rose-deep); font-size: .72rem; font-weight: 700; }
+
 .site-header { position: relative; z-index: 10; height: 78px; padding: 0 clamp(24px,5.5vw,88px); display: flex; justify-content: space-between; align-items: center; background: var(--cream); border-bottom: 1px solid #f0e0e1; }
 .wordmark { text-decoration: none; font-family: var(--serif); font-size: 1.65rem; font-weight: 600; font-style: italic; letter-spacing: -.065em; }
 .wordmark-period { color: var(--rose-deep); }
@@ -128,17 +172,6 @@ a { color: inherit; }
   43% { opacity: 1; transform: translate(var(--x),var(--y)) rotate(var(--turn)) scale(1); }
   100% { opacity: 0; transform: translate(var(--fall-x),var(--fall-y)) rotate(var(--end-turn)) scale(.85); }
 }
-.memory-photo-rain { position: fixed; z-index: 30; inset: 0; overflow: hidden; pointer-events: none; }
-.memory-rain-photo { position: absolute; top: 0; display: flex; flex-direction: column; align-items: center; width: clamp(58px,8vw,88px); padding: 5px 5px 7px; border: 1px solid #f0e1dc; background: #fffdf9; box-shadow: 0 5px 14px rgba(105,56,71,.18); opacity: 0; }
-.memory-photo-rain.is-falling .memory-rain-photo { animation: memory-photo-fall var(--rain-duration, 6s) linear var(--rain-delay, 0ms) both; }
-.memory-rain-photo img, .memory-rain-photo__placeholder { display: grid; place-items: center; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #f8e6e8; color: var(--muted); font-family: var(--serif); font-size: .62rem; line-height: 1.3; text-align: center; }
-.memory-rain-photo__caption { display: block; width: 100%; overflow: hidden; margin-top: 5px; color: var(--rose-deep); font-family: var(--serif); font-size: .57rem; line-height: 1.2; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
-@keyframes memory-photo-fall {
-  0% { opacity: 0; transform: translate3d(0,-170px,0) rotate(var(--rain-tilt)); }
-  9% { opacity: 1; }
-  86% { opacity: 1; }
-  100% { opacity: 0; transform: translate3d(var(--rain-drift),calc(100vh + 180px),0) rotate(calc(var(--rain-tilt) + var(--rain-spin))); }
-}
 .reveal-note { min-height: 120px; max-width: 330px; text-align: center; opacity: 0; transform: translateY(10px); transition: opacity .7s .55s, transform .7s .55s; pointer-events: none; }
 .reveal-note.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .reveal-ornament { display: block; color: var(--rose-deep); font-family: var(--serif); font-size: 1.5rem; line-height: 1; margin: 7px 0; }
@@ -153,24 +186,24 @@ a { color: inherit; }
 .story-heading > p:last-child { max-width: 490px; margin: 26px auto 0; color: var(--muted); line-height: 1.85; font-size: .95rem; }
 .memory-list { width: min(100%,1100px); margin: auto; display: grid; gap: clamp(95px,11vw,170px); }
 .memory-empty { max-width: 440px; margin: auto; color: var(--muted); font-family: var(--serif); font-size: 1.25rem; line-height: 1.6; text-align: center; }
-.memory { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(50px,8vw,120px); align-items: center; }
-.memory:nth-child(even) .photo-frame { grid-column: 2; grid-row: 1; transform: rotate(3deg); }
+.memory { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: clamp(50px,8vw,120px); align-items: center; }
+.memory:nth-child(even) .photo-frame { grid-column: 2; grid-row: 1; transform: rotate(2deg); }
 .memory:nth-child(even) .memory-copy { grid-column: 1; grid-row: 1; }
-.memory-copy { max-width: 420px; }
+.memory-copy { width: min(100%,420px); justify-self: center; }
 .memory-number { display: block; color: var(--rose-deep); font-family: var(--serif); font-size: 1.05rem; font-style: italic; padding-bottom: 22px; border-bottom: 1px solid #dcbdc5; }
-.memory h3 { font-family: var(--serif); font-size: clamp(2.2rem,3.2vw,3.55rem); font-weight: 400; letter-spacing: -.055em; line-height: 1.22; margin: 26px 0 17px; }
-.memory p { margin: 0; color: var(--muted); font-size: .98rem; line-height: 1.9; }
+.memory p { margin: 22px 0 0; color: var(--ink); font-family: var(--serif); font-size: clamp(1.7rem,2.6vw,2.6rem); line-height: 1.48; }
 .memory-placeholder-tag { display: inline-block; margin-top: 20px; color: var(--rose-deep); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; }
-.photo-frame { position: relative; width: min(100%,440px); justify-self: center; padding: 15px 15px 55px; background: white; box-shadow: 0 16px 30px rgba(113,67,75,.13), 0 1px 4px rgba(113,67,75,.08); transform: rotate(-3deg); transition: transform .3s; }
-.photo-frame:hover { transform: rotate(0deg) translateY(-5px); }.memory:nth-child(even) .photo-frame:hover { transform: rotate(0deg) translateY(-5px); }
-.photo-stage { position: relative; width: 100%; aspect-ratio: 1 / .9; overflow: hidden; display: grid; place-items: center; background: #f6e8e6; border: 1px solid #e3c2c5; }
+.photo-frame { position: relative; width: min(100%,470px); min-width: 0; justify-self: center; margin: 0; padding: 7px 7px 34px; background: white; box-shadow: 0 10px 21px rgba(113,67,75,.13), 0 1px 4px rgba(113,67,75,.08); transition: transform .3s; }
+.memory:nth-child(odd) .photo-frame { transform: rotate(-2deg); }
+.memory .photo-frame:hover { transform: rotate(0deg) translateY(-5px); }
+.photo-stage { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; display: grid; place-items: center; background: #f6e8e6; border: 1px solid #e3c2c5; }
 .memory:nth-child(2) .photo-stage { background: #eee8df; }.memory:nth-child(3) .photo-stage { background: #f3e6e9; }
 .photo-empty { padding: 24px; text-align: center; color: var(--rose-deep); }
 .photo-empty svg { display: block; width: 62px; height: 62px; margin: 0 auto 19px; opacity: .8; }
 .photo-empty span { display: block; font-family: var(--serif); font-style: italic; font-size: clamp(1.1rem,2vw,1.5rem); line-height: 1.4; }
 .photo-empty small { display: block; margin-top: 9px; font-family: var(--sans); font-size: .7rem; font-style: normal; }
 .photo-stage img { display: block; width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-.photo-caption { display: block; position: absolute; bottom: 18px; left: 0; right: 0; color: var(--rose-deep); font-family: var(--serif); font-style: italic; font-size: .9rem; text-align: center; }
+.photo-caption { display: block; position: absolute; bottom: 9px; left: 2px; right: 2px; color: var(--rose-deep); font-family: var(--serif); font-style: italic; font-size: clamp(.56rem, .8vw, .72rem); text-align: center; }
 .photo-loading { font-size: .83rem; font-weight: 600; }
 
 .letter-section { position: relative; padding: 120px 24px 60px; background: #f4dfe3; overflow: hidden; }
@@ -262,6 +295,20 @@ a { color: inherit; }
 .book-cover-art__rule { width: clamp(40px, 6vw, 64px); height: 1px; background: rgba(136,66,87,.5); }
 .book-cover-art__date { color: #653047; font-family: var(--serif); font-size: clamp(.6rem, .95vw, .78rem); letter-spacing: .3em; text-transform: uppercase; }
 
+.opening-photo-page, .album-intro-page { position: absolute; inset: 0; min-width: 0; min-height: 0; }
+.opening-photo-page { display: flex; flex-direction: column; gap: clamp(6px,1.1vw,12px); padding: clamp(7px,1.2vw,13px); }
+.opening-photo-page__label, .album-intro-page__number { color: var(--rose-deep); font-size: clamp(.48rem,.72vw,.67rem); font-weight: 700; letter-spacing: .09em; text-align: center; text-transform: uppercase; }
+.opening-photo-page__frame { flex: 1; display: flex; flex-direction: column; min-height: 0; width: 100%; margin: 0; padding: clamp(5px,.8vw,9px) clamp(5px,.8vw,9px) 0; background: #fff; box-shadow: 0 3px 10px rgba(90,40,55,.15); }
+.opening-photo-page__frame img { flex: 1; display: block; min-height: 0; width: 100%; object-fit: contain; background: #f6e9e4; }
+.opening-photo-page__frame figcaption { flex: none; padding: clamp(5px,.9vw,9px) 2px; color: var(--rose-deep); font-family: var(--serif); font-size: clamp(.5rem,.75vw,.68rem); font-style: italic; text-align: center; }
+.opening-photo-page__frame img[hidden] { display: none; }
+.album-intro-page { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: clamp(13px,2.4vw,27px); background: #fffaf6; text-align: center; }
+.album-intro-page__number { position: absolute; top: clamp(8px,1.3vw,14px); right: clamp(8px,1.3vw,14px); }
+.album-intro-page__eyebrow { margin-bottom: clamp(8px,1.4vw,15px); color: var(--rose-deep); font-size: clamp(.46rem,.7vw,.65rem); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.album-intro-page h3 { max-width: 100%; margin: 0; color: var(--ink); font-family: var(--serif); font-size: clamp(1.05rem,2.25vw,2rem); font-weight: 400; letter-spacing: -.045em; line-height: 1.2; }
+.album-intro-page p { max-width: 340px; margin: clamp(9px,1.5vw,17px) 0 0; color: var(--muted); font-size: clamp(.58rem,.9vw,.78rem); line-height: 1.7; }
+.album-intro-page__ornament { margin-top: clamp(9px,1.8vw,19px); color: var(--rose-deep); font-family: var(--serif); font-size: clamp(1.1rem,2vw,1.7rem); }
+
 .book-closing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(12px, 2vw, 20px); padding: 24px; text-align: center; }
 .book-closing__flower { width: clamp(34px, 5vw, 52px); height: clamp(34px, 5vw, 52px); color: var(--rose-deep); opacity: .8; }
 .book-closing__flower svg { display: block; width: 100%; height: 100%; }
@@ -316,6 +363,11 @@ a { color: inherit; }
   .hero h2 { font-size: clamp(3rem,5vw,4.5rem); }
 }
 @media (max-width: 800px) {
+  .calendar-layout { grid-template-columns: 1fr; gap: 36px; padding: 55px 0; }
+  .calendar-copy { text-align: center; }
+  .calendar-copy .chapter-label, .calendar-copy .calendar-caption { justify-content: center; }
+  .calendar-copy > p:not(.chapter-label) { margin-right: auto; margin-left: auto; }
+  .calendar-card { max-width: 420px; }
   .lock-sidecopy, .lock-footnote { display: none; }
   .hero-inner { max-width: 620px; grid-template-columns: 1fr; text-align: center; padding: 65px 24px 20px; gap: 0; }
   .hero-copy { padding-bottom: 0; }.hero .chapter-label { justify-content: center; }
@@ -323,9 +375,25 @@ a { color: inherit; }
   .hero-surprise { padding-top: 10px; }.gift-halo { top: 10px; max-width: 470px; }
   .hero-bottom { padding: 0 24px 22px; }
   .story-section { padding-top: 100px; padding-bottom: 110px; }.story-heading { margin-bottom: 85px; }
-  .memory { gap: 40px; }.memory h3 { font-size: 2.35rem; }
+  .memory { gap: 40px; }
 }
 @media (max-width: 620px) {
+  .journey-page { padding: 20px 19px 24px; }
+  .journey-shell { min-height: calc(100dvh - 44px); }
+  .calendar-layout { grid-template-columns: 1fr; gap: 32px; padding: 42px 0; }
+  .calendar-copy { text-align: center; }
+  .calendar-copy .chapter-label, .calendar-copy .calendar-caption { justify-content: center; }
+  .calendar-copy h1 { font-size: clamp(2.8rem,12vw,4rem); }
+  .calendar-copy > p:not(.chapter-label) { margin: 17px auto 0; }
+  .calendar-card { max-width: 390px; padding: 22px clamp(14px,5vw,30px); }
+  .calendar-day { width: min(36px, 9vw); }
+  .journey-actions { align-items: stretch; }
+  .journey-back, .journey-next { padding: 10px 12px; }
+  .birthday-message { padding: 42px 4px; }
+  .birthday-message h1 { font-size: clamp(3rem,12vw,5rem); }
+  .birthday-message-copy { margin-top: 20px; line-height: 1.75; }
+  .journey-header-nav { gap: 8px; }
+  .journey-header-nav .journey-back { min-height: 40px; padding: 8px 10px; font-size: .68rem; }
   .lock-screen { padding: 15px 13px; }.lock-screen::before { width: 500px; height: 500px; }.lock-orbit--one { width: 780px; height: 780px; }
   .phone { min-height: 0; width: min(100%,355px); border-width: 6px; padding: 11px 14px 21px; border-radius: 38px; }.phone-island { top: 8px; }.phone-content { padding-top: 10px; }
   .phone-description { margin: 11px auto 15px; }.keypad { gap: 6px 13px; margin-bottom: 10px; }.key { width: 48px; height: 48px; }
@@ -337,19 +405,27 @@ a { color: inherit; }
   .ribbon-burst i { scale: .75; }
   .reveal-note { min-height: 112px; }.reveal-note p { font-size: .96rem; }.hero-bottom { font-size: .66rem; }
   .story-section { padding: 80px 22px 100px; }.story-heading { margin-bottom: 72px; }.story-heading h2 { font-size: clamp(2.7rem,12vw,4rem);       }
-  .memory-list { gap: 85px; }.memory { grid-template-columns: 1fr; gap: 34px; }.memory .photo-frame, .memory:nth-child(even) .photo-frame { grid-column: 1; grid-row: 1; width: min(86%,370px); }.memory .memory-copy, .memory:nth-child(even) .memory-copy { grid-column: 1; grid-row: 2; justify-self: center; width: min(100%,390px); }.memory-number { padding-bottom: 12px; }.memory h3 { font-size: 2.4rem; margin-top: 18px; }
+  .memory-list { gap: 74px; }.memory { grid-template-columns: minmax(0,1fr); gap: 24px; }.memory .photo-frame, .memory:nth-child(even) .photo-frame { grid-column: 1; grid-row: 1; width: min(100%,390px); }.memory .memory-copy, .memory:nth-child(even) .memory-copy { grid-column: 1; grid-row: 2; width: min(100%,390px); }.memory-number { padding-bottom: 12px; }.memory p { margin-top: 16px; font-size: clamp(1.65rem,7vw,2.1rem); line-height: 1.42; }
   .letter-section { padding: 85px 18px 40px; }.letter-flower { top: 1%; left: -18px; font-size: 8rem; }.letter-paper { transform: rotate(-.6deg); padding: 50px 28px 55px; }.letter-body p { line-height: 1.9; }.closing-line { margin-top: 50px; }
   .site-footer { justify-content: center; text-align: center; gap: 5px 25px; padding: 22px; }.site-footer span:nth-child(2) { display: none; }
+}
+@media (max-width: 400px) {
+  .journey-actions { flex-direction: column-reverse; align-items: stretch; }
+  .journey-back, .journey-next { width: 100%; }
 }
 @media (max-width: 370px) {
   .phone h1 { font-size: 2.1rem; }.phone-content { padding-left: 2px; padding-right: 2px; }.keypad { width: 210px; }.key { width: 46px; height: 46px; }.pin-dots { gap: 9px; }
   .hero-inner { padding-top: 40px; }.gift-scene { height: 310px; }.gift-box { height: 119px; bottom: 23px; }.gift-lid { bottom: 138px; }.bouquet { bottom: 69px; }
 }
 @media (max-width: 260px) {
+  .journey-page { padding-right: 10px; padding-left: 10px; }
+  .journey-actions { flex-direction: column-reverse; }
+  .journey-back, .journey-next { width: 100%; }
+  .journey-header-nav > span { display: none; }
   .lock-screen { padding: 8px 3px; }.phone { padding: 8px 5px 20px; border-width: 4px; }.phone-content { padding: 8px 0; }.phone h1 { font-size: 1.8rem; }.phone-description { font-size: .76rem; }.pin-dots { gap: 5px; }.pin-dots span { width: 8px; height: 8px; }.keypad { width: 100%; gap: 4px; }.key { width: 44px; height: 44px; }.unlock-button { min-width: 0; width: 100%; }
   .site-header { padding: 0 8px; }.wordmark { font-size: 1.15rem; }.music-toggle { min-width: 44px; }.music-toggle > span:first-of-type { display: none; }
   .hero-inner { grid-template-columns: minmax(0,1fr); padding-left: 12px; padding-right: 12px; }.hero-copy, .hero-surprise { min-width: 0; }.hero h2 { font-size: 2.2rem; overflow-wrap: anywhere; }.hero-description { font-size: .8rem; }.hero .chapter-label { font-size: .62rem; }.gift-scene { height: 260px; }.gift-box { height: 95px; bottom: 21px; }.box-heart { width: 36px; }.gift-lid { height: 35px; bottom: 111px; }.bouquet { bottom: 56px; }.ribbon-burst { bottom: 111px; }.burst-ring { bottom: 91px; }.gift-action { font-size: .8rem; }
-  .story-section { padding-left: 12px; padding-right: 12px; }.story-heading h2, .memory h3, .letter-paper h2 { overflow-wrap: anywhere; }.photo-empty { padding: 10px; }.letter-section { padding-left: 8px; padding-right: 8px; }.letter-paper { padding: 36px 16px; }
+  .story-section { padding-left: 12px; padding-right: 12px; }  .story-heading h2, .letter-paper h2 { overflow-wrap: anywhere; }.photo-empty { padding: 10px; }.letter-section { padding-left: 8px; padding-right: 8px; }.letter-paper { padding: 36px 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

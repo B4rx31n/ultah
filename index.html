@@ -72,9 +72,73 @@
       <p class="lock-footnote">dibuat dengan sepenuh hati <span aria-hidden="true">♡</span></p>
     </section>
 
+    <section class="journey-page calendar-page" id="calendarPage" aria-labelledby="calendarTitle" hidden>
+      <div class="journey-shell">
+        <header class="journey-topline">
+          <span>sebuah tanggal untukmu</span>
+          <span>01 <i>/</i> 03</span>
+        </header>
+        <div class="calendar-layout">
+          <div class="calendar-copy">
+            <p class="chapter-label">Oktober 2026</p>
+            <h1 id="calendarTitle" tabindex="-1">Simpan tanggal<br /><em>istimewamu.</em></h1>
+            <p>Di antara hari-hari biasa, ada satu tanggal yang selalu ingin kurayakan: hari lahirmu.</p>
+            <p class="calendar-caption"><span aria-hidden="true">♡</span> Minggu, 11 Oktober</p>
+          </div>
+          <div class="calendar-card" role="group" aria-label="Kalender Oktober 2026">
+            <div class="calendar-month"><span>Oktober</span><span>2026</span></div>
+            <div class="calendar-weekdays" aria-hidden="true">
+              <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+            </div>
+            <div class="calendar-days" aria-label="Tanggal bulan Oktober">
+              <span class="calendar-day calendar-day--muted" aria-hidden="true">28</span>
+              <span class="calendar-day calendar-day--muted" aria-hidden="true">29</span>
+              <span class="calendar-day calendar-day--muted" aria-hidden="true">30</span>
+              <span class="calendar-day">1</span><span class="calendar-day">2</span><span class="calendar-day">3</span><span class="calendar-day">4</span>
+              <span class="calendar-day">5</span><span class="calendar-day">6</span><span class="calendar-day">7</span><span class="calendar-day">8</span><span class="calendar-day">9</span><span class="calendar-day">10</span>
+              <span class="calendar-day calendar-day--birthday" aria-label="11 Oktober, hari ulang tahun"><span>11</span></span>
+              <span class="calendar-day">12</span><span class="calendar-day">13</span><span class="calendar-day">14</span><span class="calendar-day">15</span><span class="calendar-day">16</span><span class="calendar-day">17</span><span class="calendar-day">18</span>
+              <span class="calendar-day">19</span><span class="calendar-day">20</span><span class="calendar-day">21</span><span class="calendar-day">22</span><span class="calendar-day">23</span><span class="calendar-day">24</span><span class="calendar-day">25</span>
+              <span class="calendar-day">26</span><span class="calendar-day">27</span><span class="calendar-day">28</span><span class="calendar-day">29</span><span class="calendar-day">30</span><span class="calendar-day">31</span>
+              <span class="calendar-day calendar-day--muted" aria-hidden="true">1</span>
+            </div>
+            <p class="calendar-legend"><span aria-hidden="true"></span> hari ulang tahunmu</p>
+          </div>
+        </div>
+        <nav class="journey-actions" aria-label="Navigasi halaman">
+          <button class="journey-back" type="button" data-journey-page="lockScreen">Kembali ke kode</button>
+          <button class="journey-next" type="button" id="calendarNext">Lihat ucapan <span aria-hidden="true">↗</span></button>
+        </nav>
+      </div>
+    </section>
+
+    <section class="journey-page birthday-message-page" id="birthdayMessagePage" aria-labelledby="birthdayMessageTitle" hidden>
+      <div class="journey-shell birthday-message-shell">
+        <header class="journey-topline">
+          <span>hari yang kutunggu</span>
+          <span>02 <i>/</i> 03</span>
+        </header>
+        <div class="birthday-message">
+          <span class="birthday-message-flower" aria-hidden="true">✿</span>
+          <p class="chapter-label">11 Oktober</p>
+          <h1 id="birthdayMessageTitle" tabindex="-1">Selamat ulang<br /><em>tahun, sayang.</em></h1>
+          <p class="birthday-message-copy">Semoga hari ini dipenuhi tawa, hal-hal kecil yang kamu suka, dan orang-orang yang membuatmu merasa disayang. Semoga tahun barumu membawa banyak alasan untuk bahagia.</p>
+          <p class="birthday-message-signoff">Hari ini, semuanya tentang kamu <span aria-hidden="true">♡</span></p>
+        </div>
+        <nav class="journey-actions" aria-label="Navigasi halaman">
+          <button class="journey-back" type="button" data-journey-page="calendarPage">Kembali ke kalender</button>
+          <button class="journey-next" type="button" id="birthdayNext">Ada satu kejutan lagi <span aria-hidden="true">↗</span></button>
+        </nav>
+      </div>
+    </section>
+
     <div id="birthdayPage" hidden>
       <header class="site-header">
         <a class="wordmark" href="#atas" aria-label="Kembali ke awal halaman">untukmu<span class="wordmark-period">.</span></a>
+        <div class="journey-header-nav">
+          <span>03 <i>/</i> 03</span>
+          <button class="journey-back" type="button" data-journey-page="birthdayMessagePage" aria-label="Kembali ke halaman ucapan ulang tahun">← Ucapan</button>
+        </div>
         <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" aria-label="Putar Love Songs">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 18V5l10-2v13M10 18c0 1.7-1.8 3-4 3s-4-1.3-4-3 1.8-3 4-3 4 1.3 4 3Zm10-2c0 1.7-1.8 3-4 3s-4-1.3-4-3 1.8-3 4-3 4 1.3 4 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span id="musicLabel">Putar lagu</span>
@@ -84,15 +148,13 @@
         <span class="sr-only" id="musicStatus" role="status" aria-live="polite"></span>
       </header>
 
-      <div class="memory-photo-rain" id="memoryPhotoRain" aria-hidden="true"></div>
-
       <main>
         <section class="hero" id="atas" aria-labelledby="heroTitle">
           <div class="hero-flower hero-flower--left" aria-hidden="true">✽</div>
           <div class="hero-flower hero-flower--right" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none"><g fill="#eac3cb"><ellipse cx="50" cy="28" rx="11" ry="21"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(72 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(144 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(216 50 50)"/><ellipse cx="50" cy="28" rx="11" ry="21" transform="rotate(288 50 50)"/></g><circle cx="50" cy="50" r="10" fill="#dcabb5"/></svg></div>
           <div class="hero-inner">
             <div class="hero-copy">
-              <p class="chapter-label"><span class="tiny-rule"></span> 14 Oktober <span class="tiny-rule"></span></p>
+              <p class="chapter-label"><span class="tiny-rule"></span> 11 Oktober <span class="tiny-rule"></span></p>
               <h2 id="heroTitle">Hari ini,<br />semesta <em>merayakanmu.</em></h2>
               <p class="hero-description">Selamat ulang tahun, sayang. Aku menyiapkan sesuatu yang kecil untukmu. Coba buka kadonya, ya.</p>
               <div class="hero-note"><span class="note-line" aria-hidden="true"></span> ada bunga di dalamnya</div>
@@ -245,7 +307,7 @@
           <a href="#atas" class="album-close" aria-label="Kembali ke atas">Tutup album <span aria-hidden="true">↑</span></a>
         </section>
       </main>
-      <footer class="site-footer"><span>14 Oktober 2006</span><span>dibuat untuk satu orang yang istimewa</span><a href="#atas">kembali ke atas ↑</a></footer>
+      <footer class="site-footer"><span>11 Oktober 2006</span><span>dibuat untuk satu orang yang istimewa</span><a href="#atas">kembali ke atas ↑</a></footer>
     </div>
   </body>
 </html>

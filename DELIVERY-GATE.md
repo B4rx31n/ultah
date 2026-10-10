@@ -11,8 +11,8 @@ Design Read: surat ulang tahun interaktif untuk orang tersayang, gaya scrapbook 
 - R-23 PASS: bunga, pita, hati kertas pada kado, dan foto diminta; foto pribadi memakai entri content.js atau placeholder berlabel, bukan foto rekaan.
 - R-24 PASS: tautan hanya menuju `#atas` dan `#cerita`, keduanya ada dan dapat dikunjungi.
 - R-25 PASS: pemeriksa kontras mencatat teks utama dan sekunder pada latar masing-masing di atas 4.5:1; tombol putih pada rose 7.09:1.
-- R-26 PASS: PIN, hapus, buka halaman, ledakan pita/replay kado, hujan foto per kenangan, putar/jeda musik lokal, dan semua tautan memiliki perilaku yang diuji.
-- R-27 PASS: kenangan kosong menampilkan instruksi; foto pada halaman cerita dan hujan foto memiliki placeholder, status memuat, serta pesan kesalahan yang diuji di browser.
+- R-26 PASS: PIN, navigasi halaman, ledakan pita/replay kado tanpa hujan foto, putar/jeda musik lokal, dan semua tautan memiliki perilaku yang diuji.
+- R-27 PASS: foto pada halaman cerita, album, dan cover memiliki status muat atau pesan kesalahan yang sesuai.
 - R-28 PASS: tidak ada FAQ yang dibuat-buat.
 - R-32 PASS: input memiliki label, fokus terlihat, Tab mencapai navigasi dan tombol, Enter membuka kado, serta tombol asli mendukung Space.
 - R-33 PASS: perilaku UI ditulis langsung di `app.js` dan `styles.css`, bukan lewat skrip patch.
@@ -34,7 +34,7 @@ Design Read: surat ulang tahun interaktif untuk orang tersayang, gaya scrapbook 
 - R-12 PASS: bayangan hanya pada ponsel, kado, bingkai foto, dan surat agar terasa seperti benda nyata.
 - R-13 PASS: tidak ada glow berulang pada seluruh halaman.
 - R-14 PASS: kenangan berupa bab dan bingkai foto bergantian, bukan kartu fitur seragam.
-- R-19 PASS: pita menyembur, bunga muncul, lalu hujan foto kenangan berulang terus atas permintaan; reduced motion menampilkan kejutan tanpa jeda animasi.
+- R-19 PASS: pita menyembur sebelum bunga muncul; tidak ada hujan foto. Reduced motion tetap menampilkan kejutan tanpa jeda animasi.
 - R-22 PASS: buket SVG merupakan isi kado yang diminta, bukan ilustrasi stok tanpa hubungan.
 - R-04 PASS: motif hati kertas melambangkan kasih sayang dan tampak sebagai segel lipatan yang menempel pada kado.
 
@@ -99,3 +99,16 @@ Design Read tambahan: buku album foto hardcover sekolah untuk bagian akhir situs
 - R-26 PASS: tombol header memutar dan menjeda audio lokal; penolakan autoplay atau kegagalan memuat file memberi status yang terlihat oleh pembaca layar.
 - R-35 PASS: sumber MP3 hasil transcode dimuat browser sebagai `audio/mpeg`, durasi 2:28.65; sumber AAC/DASH semula gagal dimainkan sebagai file audio meski path server memberi HTTP 200.
 - R-37 PASS: hasil transcode `music/love-songs.mp3` menjadi sumber musik situs; file sumber yang ditambahkan pengguna tetap tidak diubah.
+
+## Pengiriman 2026-10-10: foto album, solo, dan cover
+
+- R-19 PASS: pembukaan kado menampilkan pita dan bunga tanpa hujan foto; bagian cerita, surat, dan album terbuka segera setelah bunga muncul.
+- R-23 PASS: foto cerita menggunakan file dari `solo/`, isi buku memakai 10 file dari `album/`, dan cover memakai foto dari `cover/`.
+- R-26 PASS: `node --check` dan `git diff --check` berhasil; browser memastikan foto cerita dan cover termuat, sembilan foto muncul di halaman pertama album, dan tidak ada elemen hujan foto.
+- R-37 PASS: deploy GitHub Pages menyertakan direktori `album/`, `cover/`, dan `solo/` agar foto tetap tersedia di situs terbit.
+
+## Pengiriman 2026-10-10: bingkai foto dan halaman pembuka album
+
+- R-23 PASS: semua 10 foto `solo/`, 2 foto `cover/`, dan 10 foto `album/` terdaftar dan ditampilkan dalam bingkai.
+- R-26 PASS: buku menampilkan dua halaman foto pembuka dan lima halaman ucapan sebelum halaman album utama; tombol, klik, dan tombol panah tetap menavigasi sampul, halaman pembuka, foto album, serta penutup.
+- R-35 PASS: browser memastikan semua foto yang terdaftar termuat, halaman pembuka tidak overflow pada ukuran ponsel, dan foto sampul berada di halaman pembuka, bukan sampul hardcover.

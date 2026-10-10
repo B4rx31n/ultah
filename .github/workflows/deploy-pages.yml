@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html styles.css app.js content.js _site/
-          cp -R assets music _site/
+          cp -R album cover music solo _site/
       - name: Upload website files
         uses: actions/upload-pages-artifact@v3
         with:
