@@ -87,6 +87,12 @@ Design Read tambahan: buku album foto hardcover sekolah untuk bagian akhir situs
 - R-35 PASS: Chromium memastikan lima bingkai hujan punya posisi horizontal/vertikal, kemiringan, dan durasi berbeda; lima foto selesai jatuh sebelum jeda 15 detik dimulai. Browser memuat ketiga foto cerita dan tiga foto konversi baru; pemeriksaan daftar memastikan 140 jalur unik tersedia, semua JPEG web maksimal 900 piksel, dan halaman foto terakhir berisi kenangan 136-140.
 - R-37 PASS: permintaan pengguna soal lima foto yang jatuh pada posisi acak, jeda 15 detik, dan seluruh foto album dari folder `full foto` dipakai sebagai arah perubahan.
 
+## Pengiriman 2026-10-10: samakan format album di HP dan laptop
+
+- R-03 PASS: buku album mempertahankan bentuk terbuka dua halaman dan grid 3x3 di semua lebar; hanya skala bukunya yang menyesuaikan viewport.
+- R-35 PASS: Chromium memverifikasi viewport 360, 753, dan 1425 CSS px; rasio buku tetap 1.42, grid tetap 3x3, dan tidak ada overflow horizontal.
+- R-37: pengguna memilih agar tampilan buku laptop dipakai di HP juga.
+
 ## Pengiriman 2026-10-10: musik MP3 lokal
 
 - R-23 PASS: file audio dipasok pengguna yang mengonfirmasi memiliki izin untuk memakainya di situs; sumber bernama `.mp3` tetapi berisi AAC dalam kontainer MP4/DASH.

@@ -297,14 +297,13 @@ a { color: inherit; }
   .album-section { padding: 80px 22px 100px; }
   .album-heading { margin-bottom: 72px; }
   .album-heading h2 { font-size: clamp(2.7rem,12vw,4rem); }
-  .album-book { width: min(100%, 400px); aspect-ratio: .86 / 1; }
+  .album-book { width: min(100%, 400px); }
   .book-pagestack { top: 9px; right: 9px; bottom: 9px; left: 34px; }
   .book-spine { width: 34px; }
   .book-page.face--cover, .leaf-face.face--cover { inset: 0; }
   .book-back-cover { left: 7px; right: -7px; }
   .book-edge--right { top: 9px; bottom: 9px; width: 9px; }
   .book-edge--bottom { left: 34px; right: 9px; height: 9px; }
-  .photo-page__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 5px; }
   .album-controls { gap: 14px; margin-top: 38px; }
   .album-button { width: 38px; height: 38px; }
   .album-button svg { width: 18px; height: 18px; }
