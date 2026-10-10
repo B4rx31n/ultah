@@ -428,7 +428,8 @@ function renderAlbum() {
 
   const photosPerPage = 9;
   const totalPhotoPages = Math.ceil(albumPhotos.length / photosPerPage);
-  const closingView = totalPhotoPages + 1;
+  const totalPhotoSpreads = Math.ceil(totalPhotoPages / 2);
+  const closingView = totalPhotoSpreads + 1;
   const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   let currentView = 0;
   let isTurning = false;
@@ -524,15 +525,66 @@ function renderAlbum() {
   function renderFace(container, view) {
     container.replaceChildren();
     container.classList.toggle('face--cover', view === 0);
-    if (view === 0) renderCover(container);
-    else if (view === closingView) renderClosing(container);
-    else renderPhotoPage(container, view);
+    if (view === 0) {
+      container.classList.remove('face--spread');
+      renderCover(container);
+    } else if (view === closingView) {
+      renderSpread(container, totalPhotoPages, closingView);
+    } else {
+      const firstPage = (view - 1) * 2 + 1;
+      renderSpread(container, firstPage, firstPage + 1 <= totalPhotoPages ? firstPage + 1 : 0);
+    }
+  }
+
+  function renderSpread(container, leftView, rightView) {
+    container.replaceChildren();
+    container.classList.remove('face--cover');
+    container.classList.add('face--spread');
+    const spread = document.createElement('div');
+    spread.className = 'book-spread';
+
+    [[leftView, 'left'], [rightView, 'right']].forEach(([view, side]) => {
+      const page = document.createElement('div');
+      page.className = `book-page__side book-page__side--${side}`;
+      if (view === 0) {
+        page.classList.add('book-page__side--blank');
+      } else if (view === closingView) {
+        renderClosing(page);
+      } else {
+        renderPhotoPage(page, view);
+      }
+      spread.appendChild(page);
+    });
+
+    container.appendChild(spread);
+  }
+
+  function renderPage(container, view) {
+    container.replaceChildren();
+    container.classList.remove('face--cover', 'face--spread');
+    if (view === closingView) renderClosing(container);
+    else if (view > 0 && view <= totalPhotoPages) renderPhotoPage(container, view);
+    else renderBlankPage(container);
+  }
+
+  function renderBlankPage(container) {
+    container.replaceChildren();
+    container.classList.remove('face--cover', 'face--spread');
+    const blank = document.createElement('div');
+    blank.className = 'book-inside-cover';
+    container.appendChild(blank);
   }
 
   function updateControls() {
     if (currentView === 0) albumCounter.textContent = 'Sampul';
     else if (currentView === closingView) albumCounter.textContent = 'Penutup';
-    else albumCounter.textContent = `${currentView} / ${totalPhotoPages}`;
+    else {
+      const firstPage = (currentView - 1) * 2 + 1;
+      const lastPage = Math.min(firstPage + 1, totalPhotoPages);
+      albumCounter.textContent = firstPage === lastPage
+        ? `${firstPage} / ${totalPhotoPages}`
+        : `${firstPage}–${lastPage} / ${totalPhotoPages}`;
+    }
     albumPrev.disabled = currentView === 0;
     albumNext.disabled = currentView === closingView;
   }
@@ -547,6 +599,13 @@ function renderAlbum() {
     });
   }
 
+  function prefetchSpread(view) {
+    if (view < 1 || view > totalPhotoSpreads) return;
+    const firstPage = (view - 1) * 2 + 1;
+    prefetch(firstPage);
+    if (firstPage + 1 <= totalPhotoPages) prefetch(firstPage + 1);
+  }
+
   function resetLeaf() {
     bookLeaf.classList.add('no-transition');
     bookLeaf.classList.remove('is-flipped');
@@ -557,14 +616,17 @@ function renderAlbum() {
   function finishTurn(targetView) {
     isTurning = false;
     bookLeaf.classList.remove('is-turning');
+    bookLeaf.classList.remove('is-page-turn');
+    bookLeaf.classList.remove('is-spread-turn');
     bookTurnShadow.classList.remove('is-on');
     bookLeaf.style.visibility = 'hidden';
     resetLeaf();
+    albumBook.classList.toggle('is-cover', targetView === 0);
     renderFace(bookPage, targetView);
     currentView = targetView;
     updateControls();
-    prefetch(currentView + 1);
-    prefetch(currentView - 1);
+    prefetchSpread(currentView + 1);
+    prefetchSpread(currentView - 1);
   }
 
   function turnForward() {
@@ -575,8 +637,18 @@ function renderAlbum() {
       return;
     }
     isTurning = true;
-    renderFace(leafFront, currentView);
-    renderFace(leafBack, targetView);
+    albumBook.classList.remove('is-cover');
+    if (currentView === 0) {
+      renderFace(bookPage, targetView);
+      renderFace(leafFront, currentView);
+      renderBlankPage(leafBack);
+      bookLeaf.classList.add('is-page-turn');
+    } else {
+      renderFace(bookPage, targetView);
+      renderFace(leafFront, currentView);
+      renderFace(leafBack, targetView);
+      bookLeaf.classList.add('is-spread-turn');
+    }
     resetLeaf();
     bookLeaf.style.visibility = 'visible';
     bookLeaf.classList.add('is-turning');
@@ -594,8 +666,16 @@ function renderAlbum() {
       return;
     }
     isTurning = true;
-    renderFace(leafFront, targetView);
-    renderFace(leafBack, currentView);
+    if (targetView === 0) {
+      renderFace(leafFront, targetView);
+      renderPage(leafBack, 1);
+      bookLeaf.classList.add('is-page-turn');
+    } else {
+      renderFace(bookPage, targetView);
+      renderFace(leafFront, targetView);
+      renderFace(leafBack, currentView);
+      bookLeaf.classList.add('is-spread-turn');
+    }
     bookLeaf.classList.add('no-transition');
     bookLeaf.classList.add('is-flipped');
     void bookLeaf.offsetWidth;
@@ -628,7 +708,7 @@ function renderAlbum() {
     }
     const rect = albumBook.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
-    if (clickX < rect.width * 0.38) turnBackward();
+    if (clickX < rect.width * 0.5) turnBackward();
     else turnForward();
   });
 
@@ -648,9 +728,10 @@ function renderAlbum() {
     }
   });
 
+  albumBook.classList.add('is-cover');
   renderFace(bookPage, 0);
   updateControls();
-  prefetch(1);
+  prefetchSpread(1);
 }
 
 renderAlbum();

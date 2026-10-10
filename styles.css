@@ -197,8 +197,14 @@ a { color: inherit; }
 .album-empty { max-width: 460px; margin: 0 auto; padding: 42px 26px; background: var(--paper); box-shadow: 0 16px 30px rgba(113,67,75,.12); color: var(--muted); font-family: var(--serif); font-style: italic; font-size: 1.05rem; line-height: 1.7; text-align: center; }
 
 .book-scene { perspective: 1700px; perspective-origin: 50% 40%; }
-.album-book { position: relative; width: min(100%, 940px); margin: 0 auto; aspect-ratio: 1.42 / 1; transform: rotateY(2.6deg); transform-style: preserve-3d; cursor: pointer; }
+.album-book { position: relative; width: min(100%, 940px); margin: 0 auto; aspect-ratio: 1.42 / 1; transform-style: preserve-3d; cursor: pointer; }
 .album-book:focus-visible { outline: 3px solid var(--rose-deep); outline-offset: 12px; border-radius: 6px; }
+.album-book.is-cover .book-pagestack { left: 50%; }
+.album-book.is-cover .book-back-cover { left: calc(50% + 9px); }
+.album-book.is-cover .book-ribbon { left: 66.5%; }
+.album-book.is-cover .book-spine { left: 50%; }
+.album-book.is-cover .book-edge--bottom { left: 50%; }
+.album-book.is-cover .book-shadow { left: 52%; }
 
 .book-shadow { position: absolute; z-index: 0; left: 6%; right: 6%; bottom: -36px; height: 38px; background: radial-gradient(ellipse at center, rgba(88,38,53,.30), rgba(88,38,53,0) 72%); }
 .book-back-cover { position: absolute; z-index: 0; top: 0; bottom: 0; left: 9px; right: -9px; background: linear-gradient(105deg,#d98fa1,#bd758d); border-radius: 0 7px 7px 0; box-shadow: -6px 6px 14px rgba(113,67,75,.18); }
@@ -207,9 +213,20 @@ a { color: inherit; }
 .book-pagestack { position: absolute; z-index: 2; top: 11px; right: 11px; bottom: 11px; left: 46px; background: #f2e6d6; transform-style: preserve-3d; }
 .book-page { position: absolute; z-index: 1; inset: 0; background: #fffdf8; overflow: hidden; }
 .book-page::before, .leaf-face::before { content: ''; position: absolute; z-index: 3; inset: 0; background: linear-gradient(to right, rgba(74,32,44,.15), rgba(74,32,44,0) 13%); pointer-events: none; }
-.book-page.face--cover, .leaf-face.face--cover { inset: -11px -11px -11px 0; }
+.book-page.face--cover, .leaf-face.face--cover { inset: 0; }
+.book-page.face--cover .book-cover-art { left: 50%; }
+.album-book.is-cover .book-page.face--cover .book-cover-art { left: 0; }
+.book-spread { position: absolute; inset: 0; }
+.book-page__side { position: absolute; top: 0; bottom: 0; width: 50%; overflow: hidden; background: #fffdf8; }
+.book-page__side--left { left: 0; box-shadow: inset -7px 0 12px rgba(74,32,44,.08); }
+.book-page__side--right { right: 0; box-shadow: inset 7px 0 12px rgba(74,32,44,.08); }
+.book-page__side--blank { background: linear-gradient(to left, #f1e6d8, #fffdf8 18%); }
+.book-inside-cover { position: absolute; inset: 0; background: linear-gradient(to left, #f1e6d8, #fffdf8 18%); }
+.book-page.face--spread::before { display: none; }
 
 .book-leaf { position: absolute; z-index: 4; inset: 0; visibility: hidden; transform-style: preserve-3d; transform-origin: left center; transition: transform .9s cubic-bezier(.32,.72,.24,1); will-change: transform; }
+.book-leaf.is-page-turn { left: 50%; width: 50%; }
+.book-leaf.is-spread-turn { left: 0; width: 100%; transform-origin: center; }
 .book-leaf.no-transition { transition: none; }
 .book-leaf.is-flipped { transform: rotateY(-179.5deg); }
 .leaf-face { position: absolute; inset: 0; background: #fffdf8; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
@@ -224,13 +241,13 @@ a { color: inherit; }
 .book-edge--right { top: 11px; bottom: 11px; right: 0; width: 11px; border-radius: 0 3px 3px 0; background: repeating-linear-gradient(to bottom, #f3e8d8 0 2px, #ddcbb4 2px 3px); box-shadow: inset 2px 0 3px rgba(74,32,44,.16); }
 .book-edge--bottom { left: 46px; right: 11px; bottom: 0; height: 11px; border-radius: 0 0 3px 3px; background: repeating-linear-gradient(to right, #f3e8d8 0 2px, #ddcbb4 2px 3px); box-shadow: inset 0 2px 3px rgba(74,32,44,.16); }
 
-.photo-page { position: absolute; inset: 0; display: flex; flex-direction: column; padding: clamp(13px, 2.2vw, 24px) clamp(15px, 2.6vw, 32px) clamp(11px, 1.8vw, 20px) clamp(28px, 4.2vw, 46px); }
+.photo-page { position: absolute; inset: 0; display: flex; flex-direction: column; padding: clamp(13px, 2.2vw, 24px) clamp(15px, 2.3vw, 24px) clamp(11px, 1.8vw, 20px); }
 .photo-page__header { color: var(--rose-deep); font-family: var(--serif); font-size: clamp(.5rem, .72vw, .62rem); font-weight: 600; letter-spacing: .26em; text-transform: uppercase; }
-.photo-page__grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: clamp(9px, 1.5vw, 16px); padding: clamp(9px, 1.5vw, 17px) 0; }
-.photo-page__number { align-self: flex-end; padding-right: 4px; color: var(--rose-deep); font-family: var(--serif); font-style: italic; font-size: clamp(.68rem, .95vw, .85rem); }
+.photo-page__grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); place-items: center; gap: clamp(9px, 1.5vw, 16px); padding: clamp(9px, 1.5vw, 17px) 0; }
+.photo-page__number { align-self: flex-end; color: var(--rose-deep); font-family: var(--serif); font-style: italic; font-size: clamp(.68rem, .95vw, .85rem); }
 
-.album-photo-frame { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: #fff; padding: clamp(3px, .45vw, 5px) clamp(3px, .45vw, 5px) 0; border-radius: 1px; box-shadow: 0 2px 6px rgba(90,40,55,.16), 0 1px 2px rgba(90,40,55,.1); overflow: hidden; }
-.album-photo-frame img { flex: 1 1 auto; min-height: 0; width: 100%; object-fit: cover; display: block; }
+.album-photo-frame { position: relative; display: flex; flex-direction: column; align-self: center; width: 100%; max-height: 100%; aspect-ratio: 1; min-width: 0; min-height: 0; background: #fff; padding: clamp(3px, .45vw, 5px) clamp(3px, .45vw, 5px) 0; border-radius: 1px; box-shadow: 0 2px 6px rgba(90,40,55,.16), 0 1px 2px rgba(90,40,55,.1); overflow: hidden; }
+.album-photo-frame img { flex: 1 1 auto; min-height: 0; width: 100%; object-fit: contain; display: block; }
 .album-photo-frame__placeholder { flex: 1 1 auto; min-height: 0; display: grid; place-items: center; background: #f6e9e4; color: var(--rose-deep); font-family: var(--serif); font-size: clamp(.48rem, .68vw, .6rem); line-height: 1.4; text-align: center; padding: 6px; }
 .album-photo-frame__placeholder--error { background: #f3ded6; }
 .album-photo-frame__caption { flex: none; color: var(--rose-deep); font-family: var(--serif); font-style: italic; font-size: clamp(.42rem, .6vw, .55rem); line-height: 1; text-align: center; padding: 4px 2px 5px; }
@@ -280,13 +297,14 @@ a { color: inherit; }
   .album-section { padding: 80px 22px 100px; }
   .album-heading { margin-bottom: 72px; }
   .album-heading h2 { font-size: clamp(2.7rem,12vw,4rem); }
-  .album-book { width: min(100%, 400px); aspect-ratio: .86 / 1; transform: rotateY(1.6deg); }
+  .album-book { width: min(100%, 400px); aspect-ratio: .86 / 1; }
   .book-pagestack { top: 9px; right: 9px; bottom: 9px; left: 34px; }
   .book-spine { width: 34px; }
-  .book-page.face--cover, .leaf-face.face--cover { inset: -9px -9px -9px 0; }
+  .book-page.face--cover, .leaf-face.face--cover { inset: 0; }
   .book-back-cover { left: 7px; right: -7px; }
   .book-edge--right { top: 9px; bottom: 9px; width: 9px; }
   .book-edge--bottom { left: 34px; right: 9px; height: 9px; }
+  .photo-page__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 5px; }
   .album-controls { gap: 14px; margin-top: 38px; }
   .album-button { width: 38px; height: 38px; }
   .album-button svg { width: 18px; height: 18px; }
