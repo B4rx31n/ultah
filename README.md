@@ -40,4 +40,4 @@ File sumber yang kamu tambahkan di `music/` berupa audio AAC dalam kontainer MP4
 
 Workflow di `.github/workflows/deploy-pages.yml` menerbitkan situs setiap kali ada push ke branch `main`. Di GitHub, buka **Settings → Pages**, lalu pilih **GitHub Actions** sebagai sumber deployment. Setelah workflow selesai, URL situs akan tampil di **Settings → Pages** dan ringkasan workflow.
 
-Deployment mengunggah file situs (`index.html`, `styles.css`, `app.js`, `content.js`, `assets/`, dan `music/love-songs.mp3`), bukan file dokumentasi atau konfigurasi lainnya.
+Deployment mengunggah file situs (`index.html`, `styles.css`, `app.js`, `content.js`, `assets/`, dan seluruh isi `music/`), bukan file dokumentasi atau konfigurasi lainnya.

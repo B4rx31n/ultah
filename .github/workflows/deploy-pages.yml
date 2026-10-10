@@ -35,7 +35,7 @@ jobs:
             app.js
             content.js
             assets/
-            music/love-songs.mp3
+            music/
       - name: Deploy website
         id: deployment
         uses: actions/deploy-pages@v4
